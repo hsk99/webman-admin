@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+</head>
+
+<body class="pear-container">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table id="dataTable" lay-filter="dataTable"></table>
+        </div>
+    </div>
+
+    <script type="text/html" id="toolbar">
+        <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="addFile">
+			<i class="layui-icon layui-icon-add-1"></i>
+			新增单文件
+		</button>
+        <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="addFiles">
+			<i class="layui-icon layui-icon-add-1"></i>
+			新增多文件
+		</button>
+		<button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove">
+			<i class="layui-icon layui-icon-delete"></i>
+			删除
+		</button>
+    </script>
+
+
+    <script type="text/html" id="options">
+        <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+    </script>
+    <script>
+        layui.use(['table', 'form', 'jquery', 'common', 'laydate'], function () {
+            let table = layui.table;
+            let form = layui.form;
+            let $ = layui.jquery;
+            let common = layui.common;
+            let laydate = layui.laydate;
+            let MODULE_PATH = "/{:request()->app}/admin/file/";
+
+            let cols = [
+                [{
+                    type: 'checkbox'
+                }, {
+                    field: "id",
+                    title: "ID",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    field: "name",
+                    title: "文件名称",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    field: "href",
+                    title: "预览",
+                    unresize: "true",
+                    align: "center",
+                    templet: function (d) {
+                        if (d.mime.indexOf("image/") !== -1) {
+                            return '<img class="photo" lay-event="photo" src="' + d.href + '"></i>';
+                        } else {
+                            return '<a href="' + d.href + '" target="_blank" style="color: #FF5722;">预览</a>';
+                        }
+                    }
+                }, {
+                    field: "mime",
+                    title: "mime类型",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    field: "size",
+                    title: "大小",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    field: "type",
+                    title: "存储类型",
+                    unresize: "true",
+                    align: "center",
+                    templet: function (d) {
+                        if (d.type == 1) {
+                            return '本地';
+                        } else if (d.type == 2) {
+                            return '阿里云';
+                        } else if (d.type == 3) {
+                            return '七牛云';
+                        }
+                    }
+                }, {
+                    field: "ext",
+                    title: "文件后缀",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    title: '操作',
+                    toolbar: '#options',
+                    unresize: true,
+                    align: 'center',
+                    width: 180,
+                }]
+            ]
+
+            table.render({
+                elem: '#dataTable',
+                url: MODULE_PATH + 'index',
+                page: true,
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.data
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                cols: cols,
+                cellMinWidth: 100,
+                skin: 'line',
+                toolbar: '#toolbar',
+                defaultToolbar: [{
+                    title: '刷新',
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports']
+            });
+
+            table.on('tool(dataTable)', function (obj) {
+                if (obj.event === 'remove') {
+                    window.remove(obj);
+                } else if (obj.event === 'photo') {
+                    window.photo(obj);
+                }
+            });
+
+            table.on('toolbar(dataTable)', function (obj) {
+                if (obj.event === 'addFile') {
+                    window.addFile();
+                } else if (obj.event === 'addFiles') {
+                    window.addFiles();
+                } else if (obj.event === 'refresh') {
+                    window.refresh();
+                } else if (obj.event === 'batchRemove') {
+                    window.batchRemove(obj);
+                }
+            });
+
+            form.on('submit(query)', function (data) {
+                table.reload('dataTable', {
+                    where: data.field,
+                    page: { curr: 1 }
+                })
+
+                return false;
+            });
+
+            //弹出窗设置 自己设置弹出百分比
+            function screen() {
+                if (typeof width !== 'number' || width === 0) {
+                    width = $(window).width() * 0.8;
+                }
+                if (typeof height !== 'number' || height === 0) {
+                    height = $(window).height() - 20;
+                }
+                return [width + 'px', height + 'px'];
+            }
+
+            window.addFile = function () {
+                layer.open({
+                    type: 2,
+                    maxmin: true,
+                    title: '新增单文件',
+                    shade: 0.1,
+                    area: screen(),
+                    content: MODULE_PATH + 'add',
+                    end: function () {
+                        window.refresh();
+                    },
+                });
+            }
+
+            window.addFiles = function () {
+                layer.open({
+                    type: 2,
+                    maxmin: true,
+                    title: '新增多文件',
+                    shade: 0.1,
+                    area: screen(),
+                    content: MODULE_PATH + 'adds',
+                    end: function () {
+                        window.refresh();
+                    },
+                });
+            }
+
+            window.remove = function (obj) {
+                layer.confirm('确定要删除该文件', {
+                    icon: 3,
+                    title: '提示'
+                }, function (index) {
+                    layer.close(index);
+                    let loading = layer.load();
+                    $.ajax({
+                        url: MODULE_PATH + 'remove',
+                        data: { id: obj.data['id'] },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (res) {
+                            layer.close(loading);
+                            //判断有没有权限
+                            if (res && res.code == 999) {
+                                layer.msg(res.msg, {
+                                    icon: 5,
+                                    time: 2000,
+                                })
+                                return false;
+                            } else if (res.code == 200) {
+                                layer.msg(res.msg, {
+                                    icon: 1,
+                                    time: 1000
+                                }, function () {
+                                    obj.del();
+                                });
+                            } else {
+                                layer.msg(res.msg, {
+                                    icon: 2,
+                                    time: 1000
+                                });
+                            }
+                        }
+                    })
+                });
+            }
+
+            window.batchRemove = function (obj) {
+                let data = table.checkStatus(obj.config.id).data;
+                if (data.length === 0) {
+                    layer.msg("未选中数据", {
+                        icon: 3,
+                        time: 1000
+                    });
+                    return false;
+                }
+                var ids = []
+                var hasCheck = table.checkStatus('dataTable')
+                var hasCheckData = hasCheck.data
+                if (hasCheckData.length > 0) {
+                    $.each(hasCheckData, function (index, element) {
+                        ids.push(element.id)
+                    })
+                }
+                layer.confirm('确定要删除这些文件', {
+                    icon: 3,
+                    title: '提示'
+                }, function (index) {
+                    layer.close(index);
+                    let loading = layer.load();
+                    $.ajax({
+                        url: MODULE_PATH + 'batchRemove',
+                        data: { ids: ids },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (res) {
+                            layer.close(loading);
+                            //判断有没有权限
+                            if (res && res.code == 999) {
+                                layer.msg(res.msg, {
+                                    icon: 5,
+                                    time: 2000,
+                                })
+                                return false;
+                            } else if (res.code == 200) {
+                                layer.msg(res.msg, {
+                                    icon: 1,
+                                    time: 1000
+                                }, function () {
+                                    table.reload('dataTable');
+                                });
+                            } else {
+                                layer.msg(res.msg, {
+                                    icon: 2,
+                                    time: 1000
+                                });
+                            }
+                        }
+                    })
+                });
+            }
+
+            window.refresh = function (param) {
+                table.reload('dataTable');
+            }
+
+            // 查看大图
+            window.photo = function (obj) {
+                if (!obj.data.href || obj.data.href == "") {
+                    layer.msg("图片地址错误！");
+                    return;
+                }
+                var auto_img = {};
+                var img = new Image();
+                img.src = obj.data.href;
+                img.onload = function () {
+                    var max_height = $(window).height() - 100;
+                    var max_width = $(window).width();
+                    var rate1 = max_height / img.height;
+                    var rate2 = max_width / img.width;
+                    var rate3 = 1;
+                    var rate = Math.min(rate1, rate2, rate3);
+                    auto_img.height = img.height * rate;
+                    auto_img.width = img.width * rate;
+                    layer.open({
+                        type: 1,
+                        title: false,
+                        area: ['auto'],
+                        skin: 'layui-layer-nobg', //没有背景色
+                        shadeClose: true,
+                        content: "<img src='" + obj.data['href'] + "' width='" + auto_img.width + "px' height='" + auto_img.height + "px'>"
+                    })
+                }
+            };
+        })
+    </script>
+</body>
+
+</html>

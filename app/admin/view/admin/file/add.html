@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <style>
+        .pear-container {
+            background-color: white;
+        }
+
+        body {
+            margin: 10px;
+        }
+
+        .layui-upload-img {
+            width: 92px;
+            height: 92px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-tab-content">
+                    <div class="layui-upload" style="text-align: center;">
+                        <div class="layui-upload-list">
+                            <img class="layui-upload-img" id="img">
+                            <p id="fileName"></p>
+                            <p id="uploadStatus"></p>
+                        </div>
+                        <button type="button" class="pear-btn pear-btn-primary" id="upload">上传文件</button>
+                    </div>
+                </div>
+                <div class="layui-progress layui-progress-big" lay-showpercent="yes" lay-filter="img">
+                    <div class="layui-progress-bar" lay-percent=""></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+    <script>
+        layui.use(['upload', 'element', 'layer'], function () {
+            var $ = layui.jquery,
+                upload = layui.upload,
+                element = layui.element,
+                layer = layui.layer;
+
+            var uploadInst = upload.render({
+                elem: '#upload',
+                url: "/{:request()->app}/index/upload",
+                accept: 'file',
+                before: function (obj) {
+                    // 预读本地文件示例，不支持ie8
+                    obj.preview(function (index, file, result) {
+                        $('#fileName').html('<span style="color: #0000ff;">' + file.name + '</span>');
+                        if (file.type.indexOf("image/") !== -1) {
+                            $('#img').show();
+                            $('#img').attr('src', result); //图片链接（base64）
+                        } else {
+                            $('#img').hide();
+                        }
+                    });
+                    element.progress('img', '0%'); //进度条复位
+                    layer.msg('上传中', { icon: 16, time: 0 });
+                },
+                done: function (res) {
+                    // 如果上传失败
+                    if (res.code > 0) {
+                        return layer.msg('上传失败');
+                    } else {
+                        setTimeout(function () {
+                            parent.layui.table.reload("dataTable");
+                        }, 1500);
+                    }
+                    $('#uploadStatus').html('');
+                },
+                error: function () {
+                    var uploadStatus = $('#uploadStatus');
+                    uploadStatus.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs img-reload">重试</a>');
+                    uploadStatus.find('.img-reload').on('click', function () {
+                        uploadInst.upload();
+                    });
+                },
+                // 进度条
+                progress: function (n, index, e) {
+                    element.progress('img', n + '%');
+                    if (n == 100) {
+                        layer.msg('上传成功', { icon: 1 })
+                    } else {
+                        layer.msg('上传失败', { icon: 2 });
+                    }
+                }
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>

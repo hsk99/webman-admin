@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+</head>
+
+<body class="pear-container">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form edit-form" method="post" action="">
+                    <div class="layui-tab layui-tab-brief" lay-filter="TabBrief">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">网站设置</li>
+                            <li>邮箱设置</li>
+                            <li>上传设置</li>
+                        </ul>
+                        <div class="layui-tab-content">
+
+                            <div class="layui-tab-item layui-show">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        网站标题
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input autocomplete="off" class="layui-input" name="title"
+                                            value="{$data['title']|default=''}" type="text" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        网站描述
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input autocomplete="off" class="layui-input" name="desc"
+                                            value="{$data['desc']|default=''}" type="text" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        网站LOGO
+                                    </label>
+                                    <div class="layui-input-block">
+                                        {:opt_image('logo')}
+                                        <button class="pear-btn pear-btn-primary pear-btn-sm  upload-image"
+                                            type="button">
+                                            <i class="fa fa-image">
+                                            </i>
+                                            上传图片
+                                        </button>
+                                        <input lay-verify="uploadlogo" name="logo" type="hidden"
+                                            value="{$data['logo']|default=''}" />
+                                        <div class="upload-image">
+                                            <span>
+                                            </span>
+                                            <img class="upload-image" src="{$data['logo']|default=''}" {if
+                                                condition="!empty($data['logo'])" }width="100px" {/if} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        登录背景图
+                                    </label>
+                                    <div class="layui-input-block">
+                                        {:opt_image('bg')}
+                                        <button class="pear-btn pear-btn-primary pear-btn-sm upload-image"
+                                            type="button">
+                                            <i class="fa fa-image">
+                                            </i>
+                                            上传图片
+                                        </button>
+                                        <input name="bg" type="hidden" value="{$data['bg']|default=''}" />
+                                        <div class="upload-image">
+                                            <span>
+                                            </span>
+                                            <img class="upload-image" src="{$data['bg']|default=''}" {if
+                                                condition="!empty($data['bg'])" }width="100px" {/if} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        登录验证码
+                                    </label>
+                                    <div class="layui-input-block">
+                                        {if $data['login_captcha'] == 1}
+                                        <input type="radio" name="login_captcha" value="1" title="开启" checked>
+                                        <input type="radio" name="login_captcha" value="0" title="关闭">
+                                        {else}
+                                        <input type="radio" name="login_captcha" value="1" title="开启">
+                                        <input type="radio" name="login_captcha" value="0" title="关闭" checked>
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-tab-item">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        邮箱服务器
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input autocomplete="off" class="layui-input" name="smtp_host"
+                                            value="{$data['smtp_host']|default=''}" type="text" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        邮箱账号
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input autocomplete="off" class="layui-input" name="smtp_user"
+                                            value="{$data['smtp_user']|default=''}" type="text" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        邮箱密匙
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input autocomplete="off" class="layui-input" name="smtp_pass"
+                                            value="{$data['smtp_pass']|default=''}" type="text" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        邮箱协议
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input autocomplete="off" class="layui-input" name="smtp_secure"
+                                            value="{$data['smtp_secure']|default=''}" type="text" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        邮箱端口
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input autocomplete="off" class="layui-input" name="smtp_port"
+                                            value="{$data['smtp_port']|default=''}" type="text" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="width: 85px;">
+                                        异常接收邮箱
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <div class="layui-btn-container tag" lay-filter="exception_email">
+                                            <button type="button"
+                                                class="layui-btn layui-btn-primary layui-btn-sm layui-btn-radius add-exception_email"><i
+                                                    class="layui-icon layui-icon-add-1"></i>添加邮箱</button>
+                                            {foreach name="$data['exception_email']??[]" item="vo"}
+                                            <button lay-id="{$vo}" type="button"
+                                                class="tag-item tag-item-normal">{$vo}</button>
+                                            {/foreach}
+                                        </div>
+                                        <div id="exception_email-list" style="display: none;">
+                                            {foreach name="$data['exception_email']??[]" item="vo"}
+                                            <input type="hidden" name="exception_email[{$vo}]" value="{$vo}"
+                                                id="exception_email-{$vo}">
+                                            {/foreach}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-tab-item">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">存储方式</label>
+                                    <div class="layui-input-block">
+                                        <input type="radio" name="file_type" value="1" title="本地" {if
+                                            condition="$data['file_type'] eq 1" } checked {/if} lay-filter="type">
+                                        <input type="radio" name="file_type" value="2" title="阿里云" {if
+                                            condition="$data['file_type'] eq 2" } checked {/if} lay-filter="type">
+                                        <input type="radio" name="file_type" value="3" title="七牛云" {if
+                                            condition="$data['file_type'] eq 3" } checked {/if} lay-filter="type">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item" id="oss" {if condition="$data['file_type'] neq 2" }
+                                    style="display: none;" {/if}>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">Oss地址</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="oss_endpoint"
+                                                value="{$data['oss_endpoint']|default=''}" placeholder="请输入Oss地址"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">BUCKET</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="oss_bucket"
+                                                value="{$data['oss_bucket']|default=''}" placeholder="请输入BUCKET"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">KeyId</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="oss_accessKeyId"
+                                                value="{$data['oss_accessKeyId']|default=''}" placeholder="请输入KeyId"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">KeySecret</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="oss_accessKeySecret"
+                                                value="{$data['oss_accessKeySecret']|default=''}"
+                                                placeholder="请输入KeySecret" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item" id="qiniu" {if condition="$data['file_type'] neq 3" }
+                                    style="display: none;" {/if}>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">空间域名</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="qiniu_bucketUrl"
+                                                value="{$data['qiniu_bucketUrl']|default=''}" placeholder="请输入绑定空间域名"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">BUCKET</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="qiniu_bucket"
+                                                value="{$data['qiniu_bucket']|default=''}" placeholder="请输入空间BUCKET"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">AK</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="qiniu_accessKey"
+                                                value="{$data['qiniu_accessKey']|default=''}" placeholder="请输入AK"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">SK</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="qiniu_secretKey"
+                                                value="{$data['qiniu_secretKey']|default=''}" placeholder="请输入SK"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-input-block" style="min-height: 80px;">
+                        <button type="submit" class="pear-btn pear-btn-primary" lay-submit=""
+                            lay-filter="save">保存</button>
+                        <button type="reset" class="pear-btn">重置</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        let UPLOAD_IMAGE_PATH = "/{:request()->app}/index/upload";
+        layui.use(['form', 'jquery', 'uploads', 'tag'], function () {
+            let form = layui.form;
+            let $ = layui.jquery,
+                tag = layui.tag;
+
+            layui.link("/static/component/pear/css/module/uploads.css")
+
+            form.on('radio(type)', function (data) {
+                if (data.value == 1) {
+                    $("#oss").hide();
+                    $("#qiniu").hide();
+                }
+                if (data.value == 2) {
+                    $("#oss").show();
+                    $("#qiniu").hide();
+                }
+                if (data.value == 3) {
+                    $("#qiniu").show();
+                    $("#oss").hide();
+                }
+            });
+
+            form.on('submit(save)', function (data) {
+                $.ajax({
+                    data: data.field,
+                    dataType: 'json',
+                    type: 'post',
+                    success: function (res) {
+                        //判断有没有权限
+                        if (res && res.code == 999) {
+                            layer.msg(res.msg, {
+                                icon: 5,
+                                time: 2000,
+                            })
+                            return false;
+                        } else if (res.code == 200) {
+                            layer.msg(res.msg, { icon: 1, time: 1000 });
+                        } else {
+                            layer.msg(res.msg, { icon: 2, time: 3000 });
+                        }
+                    }
+                })
+                return false;
+            });
+
+            tag.render("exception_email", {
+                skin: 'layui-btn layui-btn-primary layui-btn-sm layui-btn-radius', //标签样式
+            });
+
+            $('.add-exception_email').on('click', function () {
+                layer.prompt({
+                    formType: 0,
+                    value: '',
+                    title: '请输入邮箱',
+                }, function (value, index, elem) {
+                    if (false == /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(value)) {
+                        layer.msg('请输入正确邮箱', { icon: 2, time: 1000 });
+                        return false;
+                    }
+                    tag.add('exception_email', {
+                        text: value,
+                        id: value
+                    })
+                    $("#exception_email-list").append(`<input type="hidden" name="exception_email[` + value + `]" value="` + value + `" id="exception_email-` + value + `">`);
+                    layer.close(index);
+                });
+            });
+
+            tag.on('click(exception_email)', function (data) {
+                var id = $(this).attr('lay-id');
+
+                tag.delete('exception_email', id);
+                if (document.getElementById("exception_email-" + id) != undefined) {
+                    document.getElementById("exception_email-" + id).remove();
+                }
+            });
+        })
+    </script>
+</body>
+
+</html>
