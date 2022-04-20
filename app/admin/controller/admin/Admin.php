@@ -59,7 +59,13 @@ class Admin
         if (request()->isAjax()) {
             try {
                 $data = request()->post();
+
+                if (AdminAdminModel::where('username', $data['username'])->count() > 0) {
+                    return api([], 400, '用户名已存在');
+                }
+
                 $data['password'] = md5($data['password'] . 'hsk99');
+
                 if (AdminAdminModel::create($data)) {
                     return api([], 200, '操作成功');
                 } else {
@@ -89,11 +95,17 @@ class Admin
         if (request()->isAjax()) {
             try {
                 $data = request()->post();
+
+                if (AdminAdminModel::where('username', $data['username'])->where('id', '<>', request()->input('id'))->count() > 0) {
+                    return api([], 400, '用户名已存在');
+                }
+
                 if (!empty($data['password'])) {
                     $data['password'] = md5($data['password'] . 'hsk99');
                 } else {
                     unset($data['password']);
                 }
+
                 if (AdminAdminModel::update($data, ['id' => request()->input('id')])) {
                     return api([], 200, '操作成功');
                 } else {
@@ -321,6 +333,9 @@ class Admin
                         $permissionList = array_column($permissionList, null, 'href');
                         foreach (\Webman\Route::getRoutes() as $route) {
                             $href   = $route->getPath();
+                            if (request()->app !== substr($href, 1, strlen(request()->app))) {
+                                continue;
+                            }
                             $href   = substr($href, 1 + strlen(request()->app));
                             $class  = $route->getCallback()[0];
                             $method = $route->getCallback()[1];

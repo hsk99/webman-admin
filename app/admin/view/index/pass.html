@@ -50,11 +50,13 @@
             let form = layui.form;
             let $ = layui.jquery;
             form.on('submit(save)', function (data) {
+                let loading = layer.load();
                 $.ajax({
                     data: data.field,
                     dataType: 'json',
                     type: 'post',
                     success: function (res) {
+                        layer.close(loading);
                         if (res.code == 200) {
                             layer.msg(res.msg, {
                                 icon: 1

@@ -43,11 +43,13 @@
             {{$html_js}}
             form.on('submit(save)', function (data) {
                 {{$html_js_data}}
+                let loading = layer.load();
                 $.ajax({
                     data: data.field,
                     dataType: 'json',
                     type: 'post',
                     success: function (res) {
+                        layer.close(loading);
                         //判断有没有权限
                         if (res && res.code == 999) {
                             layer.msg(res.msg, {

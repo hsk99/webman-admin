@@ -1,5 +1,5 @@
 
-# <center>Pear Admin Webman</center>
+# Pear Admin Webman
 
 ## 项目简介
 > Pear Admin Webman 基于 [webman](https://www.workerman.net/webman "webman") + [Pear Admin Layui](http://www.pearadmin.com "Pear Admin Layui") 开发，参考 [Pear Admin Think](https://gitee.com/pear-admin/Pear-Admin-Think "Pear Admin Think") 改造实现

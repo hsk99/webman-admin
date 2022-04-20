@@ -94,12 +94,12 @@
             var $ = layui.jquery;
             icon.render({
                 elem: '#iconPicker2',
-                style: 'color: #5FB878;'
-                , placeholder: ''
-                , isSplit: true
-                , page: false
-                , search: true
-                , click: function (data) {
+                style: 'color: #5FB878;',
+                placeholder: '',
+                isSplit: true,
+                page: false,
+                search: true,
+                click: function (data) {
                 },
                 ready: function (d) {
                 }
@@ -112,6 +112,7 @@
             });
 
             form.on('submit(save)', function (data) {
+                let loading = layer.load();
                 if (data.field.icon) {
                     data.field.icon = 'layui-icon ' + data.field.icon;
                 }
@@ -120,6 +121,7 @@
                     dataType: 'json',
                     type: 'post',
                     success: function (res) {
+                        layer.close(loading);
                         //判断有没有权限
                         if (res && res.code == 999) {
                             layer.msg(res.msg, {

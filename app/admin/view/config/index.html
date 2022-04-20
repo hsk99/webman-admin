@@ -58,7 +58,7 @@
                                             <span>
                                             </span>
                                             <img class="upload-image" src="{$data['logo']|default=''}" {if
-                                                condition="!empty($data['logo'])" }width="100px" {/if} />
+                                                condition="!empty($data['logo'])" }width="50px" {/if} />
                                         </div>
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@
                                         登录验证码
                                     </label>
                                     <div class="layui-input-block">
-                                        {if $data['login_captcha'] == 1}
+                                        {if $data['login_captcha']??0 == 1}
                                         <input type="radio" name="login_captcha" value="1" title="开启" checked>
                                         <input type="radio" name="login_captcha" value="0" title="关闭">
                                         {else}
@@ -268,8 +268,8 @@
         let UPLOAD_IMAGE_PATH = "/{:request()->app}/index/upload";
         layui.use(['form', 'jquery', 'uploads', 'tag'], function () {
             let form = layui.form;
-            let $ = layui.jquery,
-                tag = layui.tag;
+            let $ = layui.jquery;
+            let tag = layui.tag;
 
             layui.link("/static/component/pear/css/module/uploads.css")
 
@@ -289,11 +289,13 @@
             });
 
             form.on('submit(save)', function (data) {
+                let loading = layer.load();
                 $.ajax({
                     data: data.field,
                     dataType: 'json',
                     type: 'post',
                     success: function (res) {
+                        layer.close(loading);
                         //判断有没有权限
                         if (res && res.code == 999) {
                             layer.msg(res.msg, {

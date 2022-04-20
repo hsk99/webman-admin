@@ -174,6 +174,9 @@ class Role
 
                         foreach (\Webman\Route::getRoutes() as $route) {
                             $href   = $route->getPath();
+                            if (request()->app !== substr($href, 1, strlen(request()->app))) {
+                                continue;
+                            }
                             $href   = substr($href, 1 + strlen(request()->app));
                             $class  = $route->getCallback()[0];
                             $method = $route->getCallback()[1];
