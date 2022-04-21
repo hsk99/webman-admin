@@ -1,37 +1,19 @@
 <?php
 
 /**
- * 下划线转驼峰
+ * 文件选择
  *
  * @author HSK
- * @date 2022-04-17 02:41:16
- *
- * @param string $str
- *
- * @return string
- */
-function underline_hump(string $str): string
-{
-    return ucfirst(
-        preg_replace_callback('/_([a-zA-Z])/', function ($match) {
-            return strtoupper($match[1]);
-        }, $str)
-    );
-}
-
-/**
- * 图片选择
- *
- * @author HSK
- * @date 2022-04-17 02:40:52
+ * @date 2022-04-21 10:04:01
  *
  * @param string $val
+ * @param string $mime
  *
  * @return string
  */
-function opt_image(string $val): string
+function opt_file(string $val, string $mime = ''): string
 {
-    return '<button class="pear-btn pear-btn-primary pear-btn-sm" style="margin:4px 5px;vertical-align:top;" id="' . $val . '" type="button">图片选择</button>
+    return '<button class="pear-btn pear-btn-primary pear-btn-sm" style="margin:4px 5px;vertical-align:top;" id="' . $val . '" type="button">文件选择</button>
     <script>
         layui.use(["jquery"],function() {
             let $ = layui.jquery;
@@ -49,10 +31,10 @@ function opt_image(string $val): string
                 layer.open({
                     type: 2,
                     maxmin: true,
-                    title: "图库选择",
+                    title: "文件选择",
                     shade: 0.1,
                     area: screen(),
-                    content:"/' . request()->app . '/index/optImage",
+                    content: "/' . request()->app . '/index/optFile?mime=' . $mime . '",
                     success:function (layero,index) {
                         var iframe = window["layui-layer-iframe" + index];
                         iframe.child("' . $val . '")
@@ -61,6 +43,25 @@ function opt_image(string $val): string
             });
         })
     </script>';
+}
+
+/**
+ * 下划线转驼峰
+ *
+ * @author HSK
+ * @date 2022-04-17 02:41:16
+ *
+ * @param string $str
+ *
+ * @return string
+ */
+function underline_hump(string $str): string
+{
+    return ucfirst(
+        preg_replace_callback('/_([a-zA-Z])/', function ($match) {
+            return strtoupper($match[1]);
+        }, $str)
+    );
 }
 
 /**
@@ -105,7 +106,7 @@ function get_date($isMicro = false): string
 
     switch ($isMicro) {
         case false:
-            $date = date('Y-m-d H:i:s.', $time);
+            $date = date('Y-m-d H:i:s', $time);
             break;
         case true:
             $date = date('Y-m-d H:i:s.', $time) . substr($time, 11);

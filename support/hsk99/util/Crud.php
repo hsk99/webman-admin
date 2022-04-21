@@ -156,8 +156,8 @@ class Crud
     public static function getController($tpl)
     {
         return str_replace(
-            ['{{$app}}', '{{$date}}', '{{$ename}}', '{{$left}}', '{{$right}}', '{{$right_hump}}', '{{$table_hump}}', '{{$model_search}}'],
-            [request()->app, date('Y-m-d H:i:s'), self::$data['ename'], self::$data['left'], self::$data['right'], self::$data['right_hump'], self::$data['table_hump'], implode("", self::$data['model_search'] ?? [])],
+            ['{{$app}}', '{{$date}}', '{{$ename}}', '{{$left}}', '{{$right}}', '{{$right_hump}}', '{{$table_hump}}', '{{$model_search}}', '{{$fields}}'],
+            [request()->app, date('Y-m-d H:i:s'), self::$data['ename'], self::$data['left'], self::$data['right'], self::$data['right_hump'], self::$data['table_hump'], implode("", self::$data['model_search'] ?? []), var_export(self::$data['name'] ?? [], true)],
             file_get_contents($tpl)
         );
     }
@@ -334,6 +334,21 @@ class Crud
             $html_js_data = '';
             $lay_verify = '';
             switch (self::$data['formType'][$i]) {
+                case '6':
+                    // 上传文件
+                    $field = self::$data['name'][$i];
+                    $form .= '<input type="text" name="' .  $field  . '" value="{$model[\'' . $field . '\']??""}" readonly lay-verify="required" placeholder="请选择文件" autocomplete="off" class="layui-input layui-form-danger" id="' . $field . '-url">
+                        {:opt_file("' .  $field  . '", "")}
+                        <button class="pear-btn pear-btn-primary pear-btn-sm upload-file" accept="" echo="' . $field . '" type="button">
+                            <i class="layui-icon layui-icon-upload-drag">
+                            </i>
+                            上传附件
+                        </button>
+                        <input type="hidden" name="' . $field . '-name" value="{$model[\'' . $field . '-name\']??""}" id="' . $field . '-name">
+                        <input type="hidden" name="' . $field . '-ext" value="{$model[\'' . $field . '-ext\']??""}" id="' . $field . '-ext">
+                        <input type="hidden" name="' . $field . '-size" value="{$model[\'' . $field . '-size\']??""}" id="' . $field . '-size">';
+                    $html_js .= 'layui.link("/static/component/pear/css/module/uploads.css")';
+                    break;
                 case '5':
                     // 文本域
                     if (self::$data['null'][$i] === 'NO') {
@@ -346,9 +361,9 @@ class Crud
                     if (self::$data['null'] === 'NO') {
                         $lay_verify = ' lay-verify="uploadimg"';
                     }
-                    $form .= '{:opt_image("' .  self::$data['name'][$i]  . '")}
+                    $form .= '{:opt_file("' .  self::$data['name'][$i]  . '", "image/")}
                         <button class="pear-btn pear-btn-primary pear-btn-sm upload-image" type="button">
-                            <i class="fa fa-image">
+                            <i class="layui-icon layui-icon-upload-drag">
                             </i>
                             上传图片
                         </button>

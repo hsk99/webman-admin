@@ -207,10 +207,24 @@ class Index
     public function upload(\support\Request $request)
     {
         try {
-            /**
-             * @var \Webman\Http\UploadFile
-             */
-            $file = request()->file('file');
+            $files     = request()->file();
+            $filesKeys = array_keys($files);
+
+            switch (current($filesKeys)) {
+                case 'file':
+                    /**
+                     * @var \Webman\Http\UploadFile
+                     */
+                    $file = $files['file'];
+                    break;
+                case 'editormd-image-file':
+                    /**
+                     * @var \Webman\Http\UploadFile
+                     */
+                    $file = $files['editormd-image-file'];
+                    break;
+            }
+
             if ($file && $file->isValid()) {
                 switch (config('system.file_type')) {
                     case 3:
@@ -236,22 +250,58 @@ class Index
                         break;
                 }
             } else {
-                return api([], 400, '上传失败');
+                switch (current($filesKeys)) {
+                    case 'file':
+                        return api([], 400, '上传失败');
+                        break;
+                    case 'editormd-image-file':
+                        return json([
+                            'success' => 0,
+                            'message' => '上传失败',
+                        ]);
+                        break;
+                }
             }
 
             AdminFileModel::create($data);
 
-            return api([
-                'src' => $data['href']
-            ], 0, '上传成功');
+            switch (current($filesKeys)) {
+                case 'file':
+                    return api([
+                        'name' => $data['name'],
+                        'ext'  => $data['ext'],
+                        'size' => $data['size'],
+                        'href' => $data['href'],
+                        'url'  => $data['href'],
+                        'src'  => $data['href'],
+                    ], 0, '上传成功');
+                    break;
+                case 'editormd-image-file':
+                    return json([
+                        'success' => 1,
+                        'message' => '上传成功',
+                        'url'     => $data['href'],
+                    ]);
+                    break;
+            }
         } catch (\Throwable $th) {
             \Hsk99\WebmanException\RunException::report($th);
-            return api([], 400, '上传失败');
+            switch (current($filesKeys)) {
+                case 'file':
+                    return api([], 400, '上传失败');
+                    break;
+                case 'editormd-image-file':
+                    return json([
+                        'success' => 0,
+                        'message' => '上传失败',
+                    ]);
+                    break;
+            }
         }
     }
 
     /**
-     * 选择图片
+     * 选择文件
      *
      * @author HSK
      * @date 2022-04-06 23:20:37
@@ -260,7 +310,7 @@ class Index
      *
      * @return \support\Response
      */
-    public function optImage(\support\Request $request)
+    public function optFile(\support\Request $request)
     {
         if (request()->isAjax()) {
             $page  = (int)request()->input('page', 1);
@@ -268,9 +318,12 @@ class Index
 
             $where = [];
             if ($keywords = request()->input('keywords', '')) {
-                $where[] = ["name|mime", "like", "%" . $keywords . "%"];
+                $where[] = ["name", "like", "%" . $keywords . "%"];
             }
-            $where[] = ["mime", "like", "%image/%"];
+
+            if ($mime = request()->input('mime', '')) {
+                $where[] = ["mime", "like", "%" . $mime . "%"];
+            }
 
             $list = AdminFileModel::where($where)
                 ->order('id', 'desc')
@@ -281,6 +334,8 @@ class Index
             return api($list);
         }
 
-        return view('index/opt_image');
+        return view('index/opt_file', [
+            'mime' => request()->input('mime', '')
+        ]);
     }
 }

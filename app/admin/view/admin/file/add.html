@@ -65,13 +65,14 @@
                         }
                     });
                     element.progress('img', '0%'); //进度条复位
-                    layer.msg('上传中', { icon: 16, time: 0 });
+                    layer.msg('上传中', { icon: 16, time: 0, shade: 0.3 });
                 },
                 done: function (res) {
                     // 如果上传失败
                     if (res.code > 0) {
                         return layer.msg('上传失败');
                     } else {
+                        layer.msg('上传成功', { icon: 1, time: 1000 });
                         setTimeout(function () {
                             parent.layui.table.reload("dataTable");
                         }, 1500);
@@ -88,14 +89,8 @@
                 // 进度条
                 progress: function (n, index, e) {
                     element.progress('img', n + '%');
-                    if (n == 100) {
-                        layer.msg('上传成功', { icon: 1 })
-                    } else {
-                        layer.msg('上传失败', { icon: 2 });
-                    }
                 }
             });
-
         });
     </script>
 

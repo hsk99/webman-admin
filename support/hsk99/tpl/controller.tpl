@@ -57,7 +57,11 @@ class {{$right_hump}}
     {
         if (request()->isAjax()) {
             try {
-                if ({{$table_hump}}Model::create(request()->post())) {
+                $fields = {{$fields}};
+                $data   = array_filter(request()->post(), function ($k) use ($fields) {
+                    return in_array($k, $fields);
+                }, ARRAY_FILTER_USE_KEY);
+                if ({{$table_hump}}Model::create($data)) {
                     return api([], 200, '操作成功');
                 } else {
                     return api([], 400, '操作失败');
@@ -85,7 +89,11 @@ class {{$right_hump}}
     {
         if (request()->isAjax()) {
             try {
-                if ({{$table_hump}}Model::update(request()->post(), ['id' => request()->input('id')])) {
+                $fields = {{$fields}};
+                $data   = array_filter(request()->post(), function ($k) use ($fields) {
+                    return in_array($k, $fields);
+                }, ARRAY_FILTER_USE_KEY);
+                if ({{$table_hump}}Model::update($data, ['id' => request()->input('id')])) {
                     return api([], 200, '操作成功');
                 } else {
                     return api([], 400, '操作失败');
@@ -114,7 +122,11 @@ class {{$right_hump}}
     public function status(\support\Request $request)
     {
         try {
-            if ({{$table_hump}}Model::update(request()->post(), ['id' => request()->input('id')])) {
+            $fields = {{$fields}};
+            $data   = array_filter(request()->post(), function ($k) use ($fields) {
+                return in_array($k, $fields);
+            }, ARRAY_FILTER_USE_KEY);
+            if ({{$table_hump}}Model::update($data, ['id' => request()->input('id')])) {
                 return api([], 200, '操作成功');
             } else {
                 return api([], 400, '操作失败');

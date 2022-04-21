@@ -62,11 +62,15 @@
                         toolbar: '#options'
                     }, {
                         field: 'href',
-                        title: '图片',
+                        title: '文件',
                         unresize: true,
                         align: 'center',
                         templet: function (d) {
-                            return '<img class="photo" lay-event="photo" src="' + d.href + '"></i>';
+                            if (d.mime.indexOf("image/") !== -1) {
+                                return '<img class="photo" lay-event="photo" src="' + d.href + '"></i>';
+                            } else {
+                                return '<a href="' + d.href + '" target="_blank" style="color: #FF5722;">预览</a>';
+                            }
                         }
                     }, {
                         field: 'name',
@@ -89,7 +93,8 @@
 
                 table.render({
                     elem: '#dataTable',
-                    url: MODULE_PATH + 'optImage',
+                    url: MODULE_PATH + 'optFile',
+                    where: { mime: "{$mime}" },
                     page: true,
                     limit: 10,
                     parseData: function (params) {
@@ -124,8 +129,10 @@
                     if (obj.event === 'photo') {
                         window.photo(obj);
                     } else if (obj.event === 'opt') {
-                        $("#" + opt + "", window.parent.document).siblings('input').attr('value', obj.data.href);
-                        $("#" + opt + "", window.parent.document).siblings('div').find('img').attr('src', obj.data.href);
+                        $("#" + opt + "-name", window.parent.document).attr('value', obj.data.name);
+                        $("#" + opt + "-url", window.parent.document).attr('value', obj.data.href);
+                        $("#" + opt + "-ext", window.parent.document).attr('value', obj.data.ext);
+                        $("#" + opt + "-size", window.parent.document).attr('value', obj.data.size);
                         var index = parent.layer.getFrameIndex(window.name);
                         parent.layer.close(index);
                     }

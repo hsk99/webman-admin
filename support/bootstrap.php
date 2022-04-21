@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of webman.
  *
@@ -20,7 +19,6 @@ use Webman\Route;
 use Webman\Middleware;
 
 $worker = $worker ?? null;
-$config = $config ?? null;
 
 if ($timezone = config('app.default_timezone')) {
     date_default_timezone_set($timezone);
@@ -74,8 +72,7 @@ foreach (config('plugin', []) as $firm => $projects) {
 }
 Middleware::load(['__static__' => config('static.middleware', [])]);
 
-$bootstrap = $config['bootstrap'] ?? config('bootstrap', []);
-foreach ($bootstrap as $class_name) {
+foreach (config('bootstrap', []) as $class_name) {
     /** @var \Webman\Bootstrap $class_name */
     $class_name::start($worker);
 }
@@ -90,3 +87,4 @@ foreach (config('plugin', []) as $firm => $projects) {
 }
 
 Route::load(config_path());
+

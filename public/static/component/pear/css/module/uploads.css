@@ -1,9 +1,11 @@
-button.upload-image {
+button.upload-image,
+button.upload-file {
     margin: 4px 5px;
     vertical-align: top
 }
 
-div.upload-image {
+div.upload-image,
+div.upload-file {
     display: inline-block;
     position: relative;
     overflow: hidden
