@@ -23,6 +23,7 @@ class Config
                 $str = "<?php\r\n\r\nreturn [\r\n";
                 foreach ($data as $key => $value) {
                     if (empty($value)) {
+                        unset($data[$key]);
                         continue;
                     }
                     if (is_array($value)) {
@@ -32,10 +33,10 @@ class Config
                         $str .= "\r\n";
                     }
                 }
-                $str .= '];';
+                $str .= "];";
                 @file_put_contents(config_path() . '/system.php', $str);
 
-                \Webman\Config::reload(config_path(), ['route', 'container']);;
+                \support\hsk99\Cache::set('system', $data);
 
                 return api([], 200, '操作成功');
             } catch (\Throwable $th) {
@@ -45,7 +46,7 @@ class Config
         }
 
         return view('config/index', [
-            'data' => config('system', [
+            'data' => get_system(null, [
                 'login_captcha' => '1',
                 'file_type'     => '1',
             ])

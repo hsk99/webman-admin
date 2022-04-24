@@ -24,7 +24,7 @@ class Mail
     public static function send($toMail, $subject = '', $body = '', $isHTML = true, $config = []): array
     {
         try {
-            $config = $config ?? config('system', []);
+            $config = $config ?? get_system(null, []);
 
             if (
                 empty($config['smtp_host']) ||

@@ -1,6 +1,39 @@
 <?php
 
 /**
+ * 获取系统配置
+ *
+ * @author HSK
+ * @date 2022-04-24 16:26:29
+ *
+ * @param string $key
+ * @param mixed $default
+ *
+ * @return mixed
+ */
+function get_system($key = null, $default = null)
+{
+    if (!\support\hsk99\Cache::has('system')) {
+        \support\hsk99\Cache::set('system', config('system', []));
+    }
+    $data = \support\hsk99\Cache::get('system', []);
+
+    if ($key === null) {
+        return $data;
+    }
+
+    $key_array = \explode('.', $key);
+    foreach ($key_array as $index) {
+        if (!isset($data[$index])) {
+            return $default;
+            break;
+        }
+        $data = $data[$index];
+    }
+    return $data;
+}
+
+/**
  * 文件选择
  *
  * @author HSK

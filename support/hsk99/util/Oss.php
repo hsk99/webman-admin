@@ -18,10 +18,10 @@ class Oss
      */
     public static function upload(\Webman\Http\UploadFile $file): array
     {
-        $accessKeyId     = config('system.oss_accessKeyId');
-        $accessKeySecret = config('system.oss_accessKeySecret');
-        $endpoint        = config('system.oss_endpoint');
-        $bucket          = config('system.oss_bucket');
+        $accessKeyId     = get_system('oss_accessKeyId');
+        $accessKeySecret = get_system('oss_accessKeySecret');
+        $endpoint        = get_system('oss_endpoint');
+        $bucket          = get_system('oss_bucket');
 
         $object   = config('app.project', 'webman-admin') . '/' . $file->getUploadExtension() . '/' . date('Ymd') . '/' . uniqid() . '.' . $file->getUploadExtension();
         $filePath = $file->getPathName();
@@ -52,10 +52,10 @@ class Oss
      */
     public static function delete(string $object): bool
     {
-        $accessKeyId     = config('system.oss_accessKeyId');
-        $accessKeySecret = config('system.oss_accessKeySecret');
-        $endpoint        = config('system.oss_endpoint');
-        $bucket          = config('system.oss_bucket');
+        $accessKeyId     = get_system('oss_accessKeyId');
+        $accessKeySecret = get_system('oss_accessKeySecret');
+        $endpoint        = get_system('oss_endpoint');
+        $bucket          = get_system('oss_bucket');
 
         $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
 

@@ -21,10 +21,10 @@ class Qiniu
      */
     public static function upload(\Webman\Http\UploadFile $file): array
     {
-        $accessKey = config('system.qiniu_accessKey');
-        $secretKey = config('system.qiniu_secretKey');
-        $bucket    = config('system.qiniu_bucket');
-        $bucketUrl = config('system.qiniu_bucketUrl');
+        $accessKey = get_system('qiniu_accessKey');
+        $secretKey = get_system('qiniu_secretKey');
+        $bucket    = get_system('qiniu_bucket');
+        $bucketUrl = get_system('qiniu_bucketUrl');
         $key       = config('app.project', 'webman-admin') . '/' . $file->getUploadExtension() . '/' . date('Ymd') . '/' . uniqid() . '.' . $file->getUploadExtension();
         $value     = $file->getPathName();
 
@@ -65,10 +65,10 @@ class Qiniu
      */
     public static function delete(string $key): bool
     {
-        $accessKey = config('system.qiniu_accessKey');
-        $secretKey = config('system.qiniu_secretKey');
-        $bucket    = config('system.qiniu_bucket');
-        $bucketUrl = config('system.qiniu_bucketUrl');
+        $accessKey = get_system('qiniu_accessKey');
+        $secretKey = get_system('qiniu_secretKey');
+        $bucket    = get_system('qiniu_bucket');
+        $bucketUrl = get_system('qiniu_bucketUrl');
 
         $auth          = new Auth($accessKey, $secretKey);
         $config        = new Config();

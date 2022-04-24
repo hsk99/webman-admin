@@ -226,7 +226,7 @@ class Index
             }
 
             if ($file && $file->isValid()) {
-                switch (config('system.file_type')) {
+                switch (get_system('file_type')) {
                     case 3:
                         $data = \support\hsk99\util\Qiniu::upload($file);
                         break;

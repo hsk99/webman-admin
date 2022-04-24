@@ -4,20 +4,20 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-	<title> {:config('system.title', 'Pear Admin')} </title>
+	<title> {:get_system('title', 'Pear Admin')} </title>
 	<!-- 样 式 文 件 -->
 	<link rel="stylesheet" href="/static/component/pear/css/pear.css" />
 	<link rel="stylesheet" href="/static/admin/css/other/login.css" />
 </head>
 <!-- 代 码 结 构 -->
 
-<body background="{:config('system.bg', '/static/admin/images/background.svg')}" style="background-size: cover;">
+<body background="{:get_system('bg', '/static/admin/images/background.svg')}" style="background-size: cover;">
 	<form class="layui-form" action="javascript:void(0);">
 		<div class="layui-form-item">
-			<img class="logo" src="{:config('system.logo', '/static/admin/images/logo.png')}" />
-			<div class="title">{:config('system.title', 'Pear Admin')}</div>
+			<img class="logo" src="{:get_system('logo', '/static/admin/images/logo.png')}" />
+			<div class="title">{:get_system('title', 'Pear Admin')}</div>
 			<div class="desc">
-				{:config('system.desc', '明 湖 区 最 具 影 响 力 的 设 计 规 范 之 一')}
+				{:get_system('desc', '明 湖 区 最 具 影 响 力 的 设 计 规 范 之 一')}
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -26,7 +26,7 @@
 		<div class="layui-form-item">
 			<input placeholder="密 码" type="password" name="password" hover class="layui-input" />
 		</div>
-		{if condition="1 == config('system.login_captcha')"}
+		{if condition="1 == get_system('login_captcha')"}
 		<div class="layui-form-item">
 			<input placeholder="验证码 : " type="number" maxlength="4" name="captcha" hover
 				class="code layui-input layui-input-inline" />

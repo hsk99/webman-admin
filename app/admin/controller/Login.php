@@ -26,7 +26,7 @@ class Login
                     return api([], 400, '参数错误');
                 }
 
-                if (1 == config('system.login_captcha') && md5($data['captcha']) !== session()->get('captcha')) {
+                if (1 == get_system('login_captcha') && md5($data['captcha']) !== session()->get('captcha')) {
                     return api([], 400, '输入的验证码不正确');
                 }
 

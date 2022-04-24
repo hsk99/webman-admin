@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title> {:config('system.title', 'Pear Admin')} </title>
+    <title> {:get_system('title', 'Pear Admin')} </title>
     <!-- 依 赖 样 式 -->
     <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
     <!-- 加 载 样 式-->
@@ -107,8 +107,8 @@
             // 框 架 初 始 化
             admin.render({
                 "logo": {
-                    "title": "{:config('system.title', 'Pear Admin')}",
-                    "image": "{:config('system.logo', '/static/admin/images/logo.png')}"
+                    "title": "{:get_system('title', 'Pear Admin')}",
+                    "image": "{:get_system('logo', '/static/admin/images/logo.png')}"
                 },
                 "menu": {
                     "data": "/{:request()->app}/index/menu",
