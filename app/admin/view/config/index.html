@@ -18,6 +18,7 @@
                             <li class="layui-this">网站设置</li>
                             <li>邮箱设置</li>
                             <li>上传设置</li>
+                            <li>应用监控</li>
                         </ul>
                         <div class="layui-tab-content">
 
@@ -253,6 +254,28 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="layui-tab-item">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        存储周期
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="number" name="transfer_storage"
+                                            value="{$data['transfer_storage']|default=''}" oninput="if(value<0)value=1"
+                                            placeholder="单位：天" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        数据清理
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <div class="pear-btn pear-btn-primary" lay-submit=""
+                                            lay-filter="transfer_clear">清除数据</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="layui-input-block" style="min-height: 80px;">
@@ -343,6 +366,37 @@
                 if (document.getElementById("exception_email-" + id) != undefined) {
                     document.getElementById("exception_email-" + id).remove();
                 }
+            });
+
+            form.on('submit(transfer_clear)', function (data) {
+                layer.confirm('确定清除当前存储的监控数据？', {
+                    icon: 3,
+                    title: '提示'
+                }, function (index) {
+                    layer.close(index);
+                    let loading = layer.load();
+                    $.ajax({
+                        url: "/{:request()->app}/config/transferClear",
+                        dataType: 'json',
+                        type: 'post',
+                        success: function (res) {
+                            layer.close(loading);
+                            //判断有没有权限
+                            if (res && res.code == 999) {
+                                layer.msg(res.msg, {
+                                    icon: 5,
+                                    time: 2000,
+                                })
+                                return false;
+                            } else if (res.code == 200) {
+                                layer.msg(res.msg, { icon: 1, time: 1000 });
+                            } else {
+                                layer.msg(res.msg, { icon: 2, time: 3000 });
+                            }
+                        }
+                    })
+                });
+                return false;
             });
         })
     </script>

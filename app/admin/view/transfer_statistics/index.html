@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>Pear Admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="/static/admin/css/other/console1.css" />
+    <!-- 主 题 更 换 -->
+    <style id="pearadmin-bg-color"></style>
+    <style>
+        div::-webkit-scrollbar {
+            width: 1px;
+            height: 1px;
+        }
+
+        div::-webkit-scrollbar-track {
+            background: rgb(239, 239, 239);
+            border-radius: 2px;
+        }
+
+        div::-webkit-scrollbar-thumb {
+            background: #bfbfbf;
+            border-radius: 10px;
+        }
+
+        div::-webkit-scrollbar-thumb:hover {
+            background: #333;
+        }
+
+        div::-webkit-scrollbar-corner {
+            background: #179a16;
+        }
+
+        .overview-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 1px;
+            line-height: 1;
+        }
+    </style>
+</head>
+
+<body class="pear-container">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+
+                    <div class="layui-form-item layui-inline">
+                        <label class="layui-form-label">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="date" value="{$date}" placeholder="" class="layui-input date">
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-inline">
+                        <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="query">
+                            <i class="layui-icon layui-icon-search"></i>
+                            查询
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-xs6 layui-col-md3">
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">请求数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;" id="count">
+                            0
+                        </div>
+                        <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                            <svg t="1651028839223" class="icon" viewBox="0 0 1025 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="2605" width="200" height="200">
+                                <path
+                                    d="M942.08 665.6l0.512-90.624V141.824H269.824l-81.92 0.512C187.904 91.648 230.4 51.2 283.136 51.2h646.656c52.224 0 95.232 44.544 95.232 95.744V573.44c-1.024 38.4-30.208 92.16-82.944 92.16z m-68.608-376.32v462.336c0 50.688-41.984 89.088-94.72 89.088H482.304v72.192h179.712c13.312 0 24.064 19.456 24.064 31.744 0 13.312-11.264 28.672-24.064 28.672H209.92c-13.312 0-24.064-15.872-24.064-28.672 0-13.312 11.264-31.744 24.064-31.744h172.032v-72.192H94.72C43.008 840.192 0 802.816 0 751.104V289.28c0-50.688 41.984-95.744 94.72-95.744H778.24c52.736-0.512 95.744 44.544 95.232 95.744z m-275.456 163.328l-53.76-93.696s-16.896-15.36-28.16 3.072L504.32 389.12S321.536 317.44 278.528 504.832c0 0 48.128-108.032 195.584-51.2l-12.288 26.624s-10.752 26.112 24.576 20.48l98.816-23.04c0.512 0 22.528-6.144 12.8-25.088z m-185.856 123.392l11.776-26.624s10.752-26.112-24.576-19.968l-98.304 25.088s-22.016 6.144-11.776 25.088l56.832 91.648s16.896 15.36 27.648-3.584l11.264-26.624s184.32 67.584 222.208-120.832c-0.512 0-46.08 108.544-195.072 55.808z"
+                                    fill="#7ED3F4" p-id="2606"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs6 layui-col-md3">
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">平均响应时间（ms）</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
+                            id="averageCost">
+                            0
+                        </div>
+                        <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                            <svg t="1651028952015" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="3043" width="200" height="200">
+                                <path
+                                    d="M0 512c0 282.624 229.376 512 512 512s512-229.376 512-512S794.624 0 512 0 0 229.376 0 512z"
+                                    fill="#FAC858" p-id="3044" data-spm-anchor-id="a313x.7781069.0.i31"
+                                    class="selected"></path>
+                                <path
+                                    d="M486.912 682.496c15.36 2.048 30.72 2.56 46.08 0.512l8.192 68.096c-21.504 2.56-43.008 2.56-64.512-0.512l10.24-68.096z m118.784-26.112l37.376 57.856c-17.92 11.776-37.888 20.992-58.368 27.648l-20.992-65.536c15.36-5.12 29.184-11.776 41.984-19.968zM512 271.36c67.584 0 132.096 28.16 177.664 77.824l1.024 1.536 47.616-47.616c3.584-3.584 8.704-3.584 12.288 0 1.536 1.536 2.56 3.584 2.56 6.144v142.848c0 4.608-4.096 8.704-8.704 8.704h-142.848c-4.608 0-8.704-4.096-8.704-8.704 0-2.048 1.024-4.608 2.56-6.144l46.592-46.592C579.584 327.68 471.04 320 399.36 381.952S320 552.96 382.464 624.64c19.968 23.04 45.056 39.936 73.728 49.664l-22.528 65.024C307.712 696.32 240.64 559.104 284.16 433.152 317.44 336.384 409.088 270.848 512 271.36z m147.968 328.192l59.392 35.328c-11.264 18.944-25.088 36.352-40.96 51.712l-47.616-49.664c11.264-11.264 20.992-23.552 29.184-37.376z"
+                                    fill="#E8F0FF" p-id="3045"></path>
+                                <path
+                                    d="M537.6 391.68c4.608 0 8.704 4.096 8.704 8.704v109.568l65.024 37.376c4.096 2.56 5.632 7.68 3.072 11.776l-25.6 44.544c-2.56 4.096-7.68 5.632-11.776 3.072l-81.92-47.104c-9.728-5.632-15.872-15.36-16.896-26.624v-1.024V399.872c0-4.608 3.584-8.704 8.704-8.704l50.688 0.512z"
+                                    fill="#BEF6C7" p-id="3046"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs6 layui-col-md3">
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">成功数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
+                            id="successCount">
+                            0
+                        </div>
+                        <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                            <svg t="1651028997557" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="3241" width="200" height="200">
+                                <path
+                                    d="M512 0c282.624 0 512 229.376 512 512s-229.376 512-512 512S0 794.624 0 512 229.376 0 512 0z m347.136 269.824h-145.92l-294.912 294.912L271.36 417.792H164.864l209.92 335.872L438.784 686.08l420.352-416.256z"
+                                    fill="#91CC75" p-id="3242" data-spm-anchor-id="a313x.7781069.0.i34"
+                                    class="selected"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs6 layui-col-md3">
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">异常数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
+                            id="errorCount">
+                            0
+                        </div>
+                        <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                            <svg t="1651029044262" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="3437" width="200" height="200">
+                                <path
+                                    d="M510.464 530.432m-465.92 0a465.92 465.92 0 1 0 931.84 0 465.92 465.92 0 1 0-931.84 0Z"
+                                    fill="#FF7070" p-id="3438" data-spm-anchor-id="a313x.7781069.0.i40"
+                                    class="selected"></path>
+                                <path
+                                    d="M836.608 662.528l-276.992-455.68c-13.312-20.992-24.576-38.4-49.664-38.4-25.088 0-38.912 20.48-49.664 38.4l-276.992 455.68c-11.776 17.92-19.968 39.424-14.848 58.368 4.608 16.384 22.016 27.648 49.152 27.648h584.704c33.792 0 45.056-15.872 48.128-24.576 7.68-19.456-1.536-41.472-13.824-61.44zM476.16 360.96c0-18.944 15.36-33.792 33.792-33.792 18.944 0 33.792 15.36 33.792 33.792v148.992c0 18.944-15.36 33.792-33.792 33.792s-33.792-15.36-33.792-33.792V360.96z m33.792 296.448c-20.48 0-36.864-16.384-36.864-36.864s16.384-36.864 36.864-36.864 36.864 16.384 36.864 36.864-16.384 36.864-36.864 36.864z"
+                                    fill="#FFFFFF" p-id="3439"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space12">
+        <blockquote class="layui-elem-quote overview-title">统计分析</blockquote>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab custom-tab layui-tab-brief">
+                        <div id="countStatistics" style="background-color:#ffffff;min-height:250px;padding: 10px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab custom-tab layui-tab-brief">
+                        <div id="averageCostStatistics" style="background-color:#ffffff;min-height:250px;padding: 10px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab custom-tab layui-tab-brief">
+                        <div id="successCountStatistics"
+                            style="background-color:#ffffff;min-height:250px;padding: 10px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab custom-tab layui-tab-brief">
+                        <div id="errorCountStatistics" style="background-color:#ffffff;min-height:250px;padding: 10px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space12">
+        <blockquote class="layui-elem-quote overview-title">调用统计</blockquote>
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab custom-tab layui-tab-brief">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">调用IP统计</li>
+                            <li>调用入口统计</li>
+                        </ul>
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <table class="layui-table" lay-filter="ipStatistic">
+                                    <thead>
+                                        <tr>
+                                            <th lay-data="{field:'ip',sort:true,minWidth:130}">IP</th>
+                                            <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
+                                            <th lay-data="{field:'averageCost',sort:true,minWidth:102}">平均耗时</th>
+                                            <th lay-data="{field:'error',sort:true,minWidth:90}">异常数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {foreach name='ipStatistic' item="vo"}
+                                        <tr>
+                                            <td>{$vo.ip}</td>
+                                            <td>{$vo.count}</td>
+                                            <td>{$vo.averageCost}ms</td>
+                                            <td>{$vo.error}</td>
+                                        </tr>
+                                        {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="layui-tab-item">
+                                <table class="layui-table" lay-filter="transferStatistic">
+                                    <thead>
+                                        <tr>
+                                            <th lay-data="{field:'transfer',sort:true,minWidth:320}">调用</th>
+                                            <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
+                                            <th lay-data="{field:'averageCost',sort:true,minWidth:102}">平均耗时</th>
+                                            <th lay-data="{field:'error',sort:true,minWidth:90}">异常数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {foreach name='transferStatistic' item="vo"}
+                                        <tr>
+                                            <td>{$vo.transfer}</td>
+                                            <td>{$vo.count}</td>
+                                            <td>{$vo.averageCost}ms</td>
+                                            <td>{$vo.error}</td>
+                                        </tr>
+                                        {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space12">
+        <blockquote class="layui-elem-quote overview-title">调用入口</blockquote>
+        <div class="layui-col-md3">
+            <div class="layui-panel" style="height: 500px; overflow: hidden auto;">
+                <ul class="layui-menu" id="transferList">
+                    {foreach name='transferList' item="transfer" key="key"}
+                    <li lay-options="{id: {$key}}" transfer="{$transfer}">
+                        <div class=" layui-menu-body-title">
+                            {$transfer}
+                        </div>
+                    </li>
+                    <li class="layui-menu-item-divider"></li>
+                    {/foreach}
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-col-md9">
+            <div style="width: 100%;height: 500px;" id="transferIframe">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space12">
+        <blockquote class="layui-elem-quote overview-title">调用IP</blockquote>
+        <div class="layui-col-md3">
+            <div class="layui-panel" style="height: 500px; overflow: hidden auto;">
+                <ul class="layui-menu" id="ipList">
+                    {foreach name='ipList' item="ip" key="key"}
+                    <li lay-options="{id: {$key}}" ip="{$ip}">
+                        <div class=" layui-menu-body-title">
+                            {$ip}
+                        </div>
+                    </li>
+                    <li class="layui-menu-item-divider"></li>
+                    {/foreach}
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-col-md9">
+            <div style="width: 100%;height: 500px;" id="ipIframe">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space12">
+        <blockquote class="layui-elem-quote overview-title">状态码</blockquote>
+        <div class="layui-col-md3">
+            <div class="layui-panel" style="height: 500px; overflow: hidden auto;">
+                <ul class="layui-menu" id="codeList">
+                    {foreach name='codeList' item="code" key="key"}
+                    <li lay-options="{id: {$key}}" code="{$code}">
+                        <div class=" layui-menu-body-title">
+                            {$code}
+                        </div>
+                    </li>
+                    <li class="layui-menu-item-divider"></li>
+                    {/foreach}
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-col-md9">
+            <div style="width: 100%;height: 500px;" id="codeIframe">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space12">
+        <blockquote class="layui-elem-quote overview-title">调用记录</blockquote>
+        <table id="tracingList" lay-filter="tracingList"></table>
+    </div>
+
+    <script src="/static/common/js/jquery.min.js"></script>
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+    <script src="/static/common/js/echarts-5.3.2.min.js"></script>
+    <script>
+        layui.use(['laydate', 'count', 'dropdown', 'table'], function () {
+            var laydate = layui.laydate;
+            var count = layui.count;
+            var dropdown = layui.dropdown;
+            var table = layui.table;
+
+            laydate.render({
+                elem: ".date",
+                type: 'date',
+                trigger: 'click',
+                format: 'yyyy-MM-dd',
+            })
+
+            count.up("count", {
+                time: 20,
+                num: eval("(" + `{$totalStatistic.count}` + ")"),
+                regulator: 1
+            })
+            count.up("averageCost", {
+                time: 20,
+                num: eval("(" + `{$totalStatistic.averageCost}` + ")"),
+                bit: 2,
+                regulator: 1
+            })
+            count.up("successCount", {
+                time: 20,
+                num: eval("(" + `{$totalStatistic.successCount}` + ")"),
+                regulator: 1
+            })
+            count.up("errorCount", {
+                time: 20,
+                num: eval("(" + `{$totalStatistic.errorCount}` + ")"),
+                regulator: 1
+            })
+
+            countStatisticsObject = echarts.init(document.getElementById('countStatistics'));
+            averageCostStatisticsObject = echarts.init(document.getElementById('averageCostStatistics'));
+            successCountStatisticsObject = echarts.init(document.getElementById('successCountStatistics'));
+            errorCountStatisticsObject = echarts.init(document.getElementById('errorCountStatistics'));
+
+            chartList = eval("(" + `{$chartList}` + ")");
+
+            statistics('请求数', chartList.time, chartList.count, '126,211,244', countStatisticsObject);
+            statistics('响应时间', chartList.time, chartList.averageCost, '250,200,88', averageCostStatisticsObject);
+            statistics('成功数', chartList.time, chartList.successCount, '145,204,117', successCountStatisticsObject);
+            statistics('异常数', chartList.time, chartList.errorCount, '255,112,112', errorCountStatisticsObject);
+
+            echarts.connect([countStatisticsObject, averageCostStatisticsObject, successCountStatisticsObject, errorCountStatisticsObject]);
+
+            window.onresize = function () {
+                countStatisticsObject.resize();
+                averageCostStatisticsObject.resize();
+                successCountStatisticsObject.resize();
+                errorCountStatisticsObject.resize();
+            }
+
+            function statistics(title, x, y, color, object) {
+                var option = {
+                    backgroundColor: '#fff',
+                    title: {
+                        text: title,
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        confine: true,
+                        position: function (point, params, dom, rect, size) {
+                            return [point[0], '10%'];
+                        },
+                        extraCssText: 'width:130px;'
+                    },
+                    dataZoom: [{
+                        type: 'slider',
+                        height: 25
+                    }],
+                    grid: {
+                        top: '15%',
+                        left: '3%',
+                        right: '4%',
+                        bottom: '20%',
+                        containLabel: true
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        boundaryGap: false,
+                        axisLine: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        axisLabel: {
+                            margin: 10,
+                            textStyle: {
+                                fontSize: 14,
+                                color: 'rgba(#999)',
+                            }
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#939ab6',
+                                opacity: .15
+                            }
+                        },
+                        data: x
+                    }],
+                    yAxis: [{
+                        type: 'value',
+                        min: 0,
+                        axisTick: {
+                            show: false
+                        },
+                        axisLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            margin: 10,
+                            textStyle: {
+                                fontSize: 14,
+                                color: '#999',
+                            }
+                        },
+                        splitLine: {
+                            show: false
+                        }
+
+                    }],
+                    series: [{
+                        name: title,
+                        type: 'line',
+                        z: 3,
+                        showSymbol: false,
+                        smoothMonotone: 'x',
+                        lineStyle: {
+                            width: 3,
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: 'rgba(' + color + ')' // 100% 处的颜色
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(' + color + ')' // 0% 处的颜色
+                                }]
+                            },
+                            shadowBlur: 4,
+                            shadowColor: 'rgba(' + color + ',.2)',
+                            shadowOffsetY: 4
+                        },
+                        areaStyle: {
+                            normal: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0,
+                                        color: 'rgba(' + color + ',0.5)' // 100% 处的颜色
+                                    }, {
+                                        offset: 1,
+                                        color: 'rgba(' + color + ',0.1)' // 0% 处的颜色
+                                    }]
+                                }
+                            }
+                        },
+                        itemStyle: {
+                            color: 'rgba(' + color + ')'
+                        },
+                        smooth: true,
+                        data: y
+                    }]
+                };
+
+                object.setOption(option);
+            }
+
+            // IP统计
+            table.init('ipStatistic', {
+                limit: Number.MAX_VALUE,
+                height: 500,
+            });
+
+            // 调用统计
+            table.init('transferStatistic', {
+                limit: Number.MAX_VALUE,
+                height: 500,
+            });
+
+            // 调用入口
+            dropdown.on('click(transferList)', function (options) {
+                var transfer = $(this).attr('transfer');
+                var url = "/{:request()->app}/transferstatistics/transfer?transfer=" + transfer;
+
+                $("#transferIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
+            });
+
+            // 调用IP
+            dropdown.on('click(ipList)', function (options) {
+                var ip = $(this).attr('ip');
+                var url = "/{:request()->app}/transferstatistics/ip?ip=" + ip;
+
+                $("#ipIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
+            });
+
+            // 状态码
+            dropdown.on('click(codeList)', function (options) {
+                var code = $(this).attr('code');
+                var url = "/{:request()->app}/transferstatistics/code?code=" + code;
+
+                $("#codeIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
+            });
+
+            // 调用记录
+            table.render({
+                elem: '#tracingList',
+                even: true,
+                height: 500,
+                loading: true,
+                url: "/{:request()->app}/transferstatistics/tracingList?{:http_build_query(['date'=>$date])}",
+                method: 'POST',
+                page: true,
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.tracingList
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                cols: [[
+                    { field: 'time', title: '调用时间', width: 185 },
+                    { field: 'transfer', title: '调用入口', minWidth: 320 },
+                    { field: 'ip', title: 'IP', width: 150 },
+                    { field: 'costTime', title: '耗时', width: 150, templet: '#costTime' },
+                    { field: 'success', title: '状态', width: 60, templet: '#success' },
+                    { field: 'trace', title: 'trace', width: 130, templet: '#trace' }
+                ]]
+            });
+
+            // 查看详情
+            $('body').on('click', '.details', function () {
+                var trace = $(this).attr('trace');
+                var details = $('#details-' + trace).html();
+
+                layer.open({
+                    type: 1,
+                    title: false,
+                    anim: 5,
+                    scrollbar: false,
+                    resize: false,
+                    move: false,
+                    offset: 'auto',
+                    area: ['80%', '80%'],
+                    skin: 'open-skin',
+                    content: `<pre class="layui-code" lay-title="详细信息" lay-skin="notepad">` + details + `</pre>`,
+                    success: function (layero, index) {
+                        layui.code({
+                            elem: 'pre'
+                        });
+                    }
+                });
+            });
+        })
+    </script>
+    <script type="text/html" id="success">
+        {{#  if(true === d.success){ }}
+        <i class="layui-icon layui-icon-circle-dot" style="font-size: 20px; color: #7ecf51;"></i>
+        {{#  } else { }}
+        <i class="layui-icon layui-icon-circle-dot" style="font-size: 20px; color: #e16757;"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="costTime">
+        {{d.costTime}}ms
+    </script>
+    <script type="text/html" id="trace">
+        <a href="javascript:;" style="color: #0066cc;" class="details" trace='{{d.trace}}'>{{d.trace}}</a>
+        <div style="display: none;" id="details-{{d.trace}}">
+            {{d.details}}
+        </div>
+    </script>
+</body>
+
+</html>

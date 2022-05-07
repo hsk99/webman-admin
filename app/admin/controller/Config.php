@@ -2,6 +2,8 @@
 
 namespace app\admin\controller;
 
+use support\Redis;
+
 class Config
 {
     /**
@@ -77,5 +79,30 @@ class Config
             }
         }
         return  $i . "$level" . '],' . "\r\n";
+    }
+
+    /**
+     * 清除应用监控数据
+     *
+     * @author HSK
+     * @date 2022-04-27 15:19:38
+     *
+     * @param \support\Request $request
+     *
+     * @return \support\Response
+     */
+    public function transferClear(\support\Request $request)
+    {
+        try {
+            array_map(function ($key) {
+                $key = str_replace(config('redis.default.prefix'), '', $key);
+                Redis::del($key);
+            }, Redis::keys('TransferStatistics:*'));
+
+            return api([], 200, '清除成功');
+        } catch (\Throwable $th) {
+            \Hsk99\WebmanException\RunException::report($th);
+            return api([], 400, '清除失败');
+        }
     }
 }

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>Pear Admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="/static/admin/css/other/console1.css" />
+    <!-- 主 题 更 换 -->
+    <style id="pearadmin-bg-color"></style>
+</head>
+
+<body class="pear-container">
+    <div class="layui-row layui-col-space12">
+        <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+                <li class="layui-this">统计分析</li>
+                <li>调用记录</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-body">
+                                <div class="layui-tab custom-tab layui-tab-brief">
+                                    <div id="countStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-body">
+                                <div class="layui-tab custom-tab layui-tab-brief">
+                                    <div id="averageCostStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-body">
+                                <div class="layui-tab custom-tab layui-tab-brief">
+                                    <div id="successCountStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-body">
+                                <div class="layui-tab custom-tab layui-tab-brief">
+                                    <div id="errorCountStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="layui-tab-item">
+                    <table id="tracingList" lay-filter="tracingList"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/common/js/jquery.min.js"></script>
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+    <script src="/static/common/js/echarts-5.3.2.min.js"></script>
+    <script>
+        layui.use(['table'], function () {
+            var table = layui.table;
+
+            countStatisticsObject = echarts.init(document.getElementById('countStatistics'));
+            averageCostStatisticsObject = echarts.init(document.getElementById('averageCostStatistics'));
+            successCountStatisticsObject = echarts.init(document.getElementById('successCountStatistics'));
+            errorCountStatisticsObject = echarts.init(document.getElementById('errorCountStatistics'));
+
+            chartList = eval("(" + `{$chartList}` + ")");
+
+            statistics('请求数', chartList.time, chartList.count, '126,211,244', countStatisticsObject);
+            statistics('响应时间', chartList.time, chartList.averageCost, '250,200,88', averageCostStatisticsObject);
+            statistics('成功数', chartList.time, chartList.successCount, '145,204,117', successCountStatisticsObject);
+            statistics('异常数', chartList.time, chartList.errorCount, '255,112,112', errorCountStatisticsObject);
+
+            echarts.connect([countStatisticsObject, averageCostStatisticsObject, successCountStatisticsObject, errorCountStatisticsObject]);
+
+            function statistics(title, x, y, color, object) {
+                var option = {
+                    backgroundColor: '#fff',
+                    title: {
+                        text: title,
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        confine: true,
+                        position: function (point, params, dom, rect, size) {
+                            return [point[0], '10%'];
+                        },
+                        extraCssText: 'width:130px;'
+                    },
+                    dataZoom: [{
+                        type: 'slider',
+                        height: 20,
+                        bottom: '5%',
+                    }],
+                    grid: {
+                        top: '15%',
+                        left: '1%',
+                        right: '1%',
+                        bottom: '20%',
+                        containLabel: true
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        boundaryGap: false,
+                        axisLine: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        axisLabel: {
+                            margin: 10,
+                            textStyle: {
+                                fontSize: 14,
+                                color: 'rgba(#999)',
+                            }
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#939ab6',
+                                opacity: .15
+                            }
+                        },
+                        data: x
+                    }],
+                    yAxis: [{
+                        type: 'value',
+                        min: 0,
+                        axisTick: {
+                            show: false
+                        },
+                        axisLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            margin: 10,
+                            textStyle: {
+                                fontSize: 14,
+                                color: '#999',
+                            }
+                        },
+                        splitLine: {
+                            show: false
+                        }
+
+                    }],
+                    series: [{
+                        name: title,
+                        type: 'line',
+                        z: 3,
+                        showSymbol: false,
+                        smoothMonotone: 'x',
+                        lineStyle: {
+                            width: 3,
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: 'rgba(' + color + ')' // 100% 处的颜色
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(' + color + ')' // 0% 处的颜色
+                                }]
+                            },
+                            shadowBlur: 4,
+                            shadowColor: 'rgba(' + color + ',.2)',
+                            shadowOffsetY: 4
+                        },
+                        areaStyle: {
+                            normal: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0,
+                                        color: 'rgba(' + color + ',0.5)' // 100% 处的颜色
+                                    }, {
+                                        offset: 1,
+                                        color: 'rgba(' + color + ',0.1)' // 0% 处的颜色
+                                    }]
+                                }
+                            }
+                        },
+                        itemStyle: {
+                            color: 'rgba(' + color + ')'
+                        },
+                        smooth: true,
+                        data: y
+                    }]
+                };
+
+                object.setOption(option);
+            }
+
+            // 调用记录
+            table.render({
+                elem: '#tracingList',
+                size: 'sm',
+                even: true,
+                height: 425,
+                loading: true,
+                url: "/{:request()->app}/transferstatistics/codeTracingList?{:http_build_query(['code'=>$code,'date'=>$date])}",
+                method: 'POST',
+                page: true,
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.tracingList
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                cols: [[
+                    { field: 'time', title: '调用时间', width: 185 },
+                    { field: 'transfer', title: '调用入口', minWidth: 320 },
+                    { field: 'ip', title: 'IP', width: 130 },
+                    { field: 'costTime', title: '耗时', width: 100, templet: '#costTime' },
+                    { field: 'success', title: '状态', width: 60, templet: '#success' },
+                    { field: 'trace', title: 'trace', width: 130, templet: '#trace' }
+                ]]
+            });
+
+            // 查看详情
+            $('body').on('click', '.details', function () {
+                var trace = $(this).attr('trace');
+                var details = $('#details-' + trace).html();
+
+                layer.open({
+                    type: 1,
+                    title: false,
+                    anim: 5,
+                    scrollbar: false,
+                    resize: false,
+                    move: false,
+                    offset: 'auto',
+                    area: ['80%', '80%'],
+                    skin: 'open-skin',
+                    content: `<pre class="layui-code" lay-title="详细信息" lay-skin="notepad">` + details + `</pre>`,
+                    success: function (layero, index) {
+                        layui.code({
+                            elem: 'pre'
+                        });
+                    }
+                });
+            });
+        })
+    </script>
+    <script type="text/html" id="success">
+        {{#  if(true === d.success){ }}
+        <i class="layui-icon layui-icon-circle-dot" style="font-size: 20px; color: #7ecf51;"></i>
+        {{#  } else { }}
+        <i class="layui-icon layui-icon-circle-dot" style="font-size: 20px; color: #e16757;"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="costTime">
+        {{d.costTime}}ms
+    </script>
+    <script type="text/html" id="trace">
+        <a href="javascript:;" style="color: #0066cc;" class="details" trace='{{d.trace}}'>{{d.trace}}</a>
+        <div style="display: none;" id="details-{{d.trace}}">
+            {{d.details}}
+        </div>
+    </script>
+</body>
+
+</html>

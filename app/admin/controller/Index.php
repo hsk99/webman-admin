@@ -263,7 +263,11 @@ class Index
                 }
             }
 
-            AdminFileModel::create($data);
+            try {
+                AdminFileModel::create($data);
+            } catch (\Throwable $th) {
+                \Hsk99\WebmanException\RunException::report($th);
+            }
 
             switch (current($filesKeys)) {
                 case 'file':

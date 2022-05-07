@@ -19,7 +19,7 @@ function get_system($key = null, $default = null)
     $data = \support\hsk99\Cache::get('system', []);
 
     if ($key === null) {
-        return $data;
+        return $data ?: $default;
     }
 
     $key_array = \explode('.', $key);

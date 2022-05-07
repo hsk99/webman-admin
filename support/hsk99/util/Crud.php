@@ -28,13 +28,18 @@ class Crud
         if ('POST' === request()->method()) {
             $data = request()->post();
             // 数据验证
-            if (!preg_match('/^[a-z]+_[a-z]+$/i', $data['name'])) return api([], 400, '表名格式不正确');
+            if (
+                !preg_match('/^[a-z]+_[a-z]+$/i', $data['name']) &&
+                !preg_match('/^[a-z]+_[a-z]+_[a-z0-9_]+$/i', $data['name'])
+            ) {
+                return api([], 400, '表名格式不正确');
+            };
             try {
                 Db::execute('CREATE TABLE ' . config('thinkorm.connections.mysql.prefix') . $data['name'] . '(
                     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT "id",
-                    `create_time` timestamp NULL DEFAULT NULL COMMENT "创建时间",
-                    `update_time` timestamp NULL DEFAULT NULL COMMENT "更新时间",
-                    `delete_time` timestamp NULL DEFAULT NULL COMMENT "删除时间",
+                    `create_time` datetime NULL DEFAULT NULL COMMENT "创建时间",
+                    `update_time` datetime NULL DEFAULT NULL COMMENT "更新时间",
+                    `delete_time` datetime NULL DEFAULT NULL COMMENT "删除时间",
                     PRIMARY KEY (`id`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 COMMENT="' . $data['desc'] . '";
                     ');
@@ -78,6 +83,9 @@ class Crud
                     // 控制器
                     $controller = app_path() . DIRECTORY_SEPARATOR . request()->app . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . $data['left'] . DIRECTORY_SEPARATOR . $data['right_hump'] . '.php';
                     if (file_exists($controller)) unlink($controller);
+                    // API
+                    $api = app_path() . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . $data['left'] . DIRECTORY_SEPARATOR . $data['right_hump'] . '.php';
+                    if (file_exists($api)) unlink($api);
                     // 模型
                     $model = $commom . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR . $data['table_hump'] . '.php';
                     if (file_exists($model)) unlink($model);
@@ -135,6 +143,7 @@ class Crud
             $view   = app_path() . DIRECTORY_SEPARATOR . request()->app . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . self::$data['left'] . DIRECTORY_SEPARATOR . self::$data['right'] . DIRECTORY_SEPARATOR;
             $crud   = [
                 app_path() . DIRECTORY_SEPARATOR . request()->app . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . self::$data['left'] . DIRECTORY_SEPARATOR . self::$data['right_hump'] . '.php' => self::getController($tpl . 'controller.tpl'),
+                app_path() . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . self::$data['left'] . DIRECTORY_SEPARATOR . self::$data['right_hump'] . '.php' => self::getController($tpl . 'api.tpl'),
                 $commom . 'model' . DIRECTORY_SEPARATOR . self::$data['table_hump'] . '.php' => self::getModel($tpl . 'model.tpl'),
                 $view . 'index.html' => self::getIndex($tpl . 'index.tpl'),
                 $view . 'add.html' => self::getAdd($tpl . 'add.tpl'),
@@ -334,10 +343,27 @@ class Crud
             $html_js_data = '';
             $lay_verify = '';
             switch (self::$data['formType'][$i]) {
+                case '7':
+                    // 时间选择
+                    if (self::$data['null']) {
+                        $lay_verify = ' lay-verify="required"';
+                    }
+                    $field = self::$data['name'][$i];
+                    $form .= '<input class="layui-input layui-form-danger" id="' . $field . '"' . $lay_verify . ' name="' . $field . '" type="text" value="{$model[\'' . $field . '\']??""}"/>';
+                    $html_js .= 'laydate.render({
+                        elem: "#' . $field . '",
+                        type: "date",
+                        trigger: "click",
+                        format: "yyyy-MM-dd HH:mm:ss",
+                    });';
+                    break;
                 case '6':
                     // 上传文件
+                    if (self::$data['null']) {
+                        $lay_verify = ' lay-verify="required"';
+                    }
                     $field = self::$data['name'][$i];
-                    $form .= '<input type="text" name="' .  $field  . '" value="{$model[\'' . $field . '\']??""}" readonly lay-verify="required" placeholder="请选择文件" autocomplete="off" class="layui-input layui-form-danger" id="' . $field . '-url">
+                    $form .= '<input type="text" name="' .  $field  . '" value="{$model[\'' . $field . '\']??""}"' . $lay_verify . ' readonly placeholder="请选择文件" autocomplete="off" class="layui-input layui-form-danger" id="' . $field . '-url">
                         {:opt_file("' .  $field  . '", "")}
                         <button class="pear-btn pear-btn-primary pear-btn-sm upload-file" accept="" echo="' . $field . '" type="button">
                             <i class="layui-icon layui-icon-upload-drag">
@@ -347,19 +373,19 @@ class Crud
                         <input type="hidden" name="' . $field . '-name" value="{$model[\'' . $field . '-name\']??""}" id="' . $field . '-name">
                         <input type="hidden" name="' . $field . '-ext" value="{$model[\'' . $field . '-ext\']??""}" id="' . $field . '-ext">
                         <input type="hidden" name="' . $field . '-size" value="{$model[\'' . $field . '-size\']??""}" id="' . $field . '-size">';
-                    $html_js .= 'layui.link("/static/component/pear/css/module/uploads.css")';
+                    $html_js .= 'layui.link("/static/component/pear/css/module/uploads.css");';
                     break;
                 case '5':
                     // 文本域
-                    if (self::$data['null'][$i] === 'NO') {
-                        $lay_verify = ' lay-verify="required ';
+                    if (self::$data['null'][$i]) {
+                        $lay_verify = ' lay-verify="required"';
                     }
                     $form .= '<textarea class="layui-textarea"' . $lay_verify . ' name="' . self::$data['name'][$i] . '" >{$model[\'' . self::$data['name'][$i] . '\']??""}</textarea>';
                     break;
                 case '3':
                     // 上传图片
-                    if (self::$data['null'] === 'NO') {
-                        $lay_verify = ' lay-verify="uploadimg"';
+                    if (self::$data['null'][$i]) {
+                        $lay_verify = ' lay-verify="required"';
                     }
                     $form .= '{:opt_file("' .  self::$data['name'][$i]  . '", "image/")}
                         <button class="pear-btn pear-btn-primary pear-btn-sm upload-image" type="button">
@@ -373,7 +399,7 @@ class Crud
                             </span>
                             <img class="upload-image" src="{$model[\'' . self::$data['name'][$i] . '\']??""}"/>
                         </div>';
-                    $html_js .= 'layui.link("/static/component/pear/css/module/uploads.css")';
+                    $html_js .= 'layui.link("/static/component/pear/css/module/uploads.css");';
                     break;
                 case '2':
                     // 富文本
@@ -383,14 +409,14 @@ class Crud
                     break;
                 default:
                     // 文本
-                    if (self::$data['null'][$i] === 'NO') {
-                        $lay_verify = ' lay-verify="required ';
+                    if (self::$data['null'][$i]) {
+                        $lay_verify = ' lay-verify="required';
                         if (in_array(self::$data['type'][$i], ['int', 'decimal', 'float', 'double'])) {
                             $lay_verify .= '|number';
                         }
                         $lay_verify .= '"';
                     }
-                    $form .= '<input type="text" class="layui-input layui-form-danger"' . $lay_verify . ' name="' . self::$data['name'][$i] . '" type="text" value="{$model[\'' . self::$data['name'][$i] . '\']??""}"/>';
+                    $form .= '<input class="layui-input layui-form-danger"' . $lay_verify . ' name="' . self::$data['name'][$i] . '" type="text" value="{$model[\'' . self::$data['name'][$i] . '\']??""}"/>';
                     break;
             }
             $form .= '

@@ -132,12 +132,12 @@ INSERT INTO `admin_admin_role` VALUES (11, 2, 1);
 DROP TABLE IF EXISTS `admin_file`;
 CREATE TABLE `admin_file`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '文件名称',
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '文件名称',
   `href` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '文件路径',
-  `mime` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'mime类型',
-  `size` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '大小',
+  `mime` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'mime类型',
+  `size` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '大小',
   `type` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1--本地  2--阿里云  3--七牛云',
-  `ext` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '文件后缀',
+  `ext` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '文件后缀',
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '文件表' ROW_FORMAT = Dynamic;
@@ -190,7 +190,7 @@ INSERT INTO `admin_permission` VALUES (21, 17, '删除菜单', '/admin/permissio
 INSERT INTO `admin_permission` VALUES (22, 0, '系统管理', '', 'layui-icon layui-icon-set', 99, 0, 1);
 INSERT INTO `admin_permission` VALUES (23, 22, '后台日志', '/admin/admin/log', '', 2, 1, 1);
 INSERT INTO `admin_permission` VALUES (24, 23, '清空管理员日志', '/admin/admin/removelog', '', 1, 1, 2);
-INSERT INTO `admin_permission` VALUES (25, 22, '系统设置', '/config/index', '', 3, 1, 1);
+INSERT INTO `admin_permission` VALUES (25, 22, '系统设置', '/config/index', '', 4, 1, 1);
 INSERT INTO `admin_permission` VALUES (94, 22, '文件管理', '/admin/file/index', '', 1, 1, 1);
 INSERT INTO `admin_permission` VALUES (95, 94, '新增文件', '/admin/file/add', '', 1, 1, 2);
 INSERT INTO `admin_permission` VALUES (96, 94, '修改文件', '/admin/file/edit', '', 1, 1, 2);
@@ -201,6 +201,17 @@ INSERT INTO `admin_permission` VALUES (107, 11, '批量删除', '/admin/admin/ba
 INSERT INTO `admin_permission` VALUES (108, 94, '添加多文件', '/admin/file/adds', '', 1, 1, 2);
 INSERT INTO `admin_permission` VALUES (109, 94, '批量删除', '/admin/file/batchremove', '', 1, 1, 2);
 INSERT INTO `admin_permission` VALUES (110, 17, '生成菜单', '/admin/permission/generate', '', 1, 1, 2);
+INSERT INTO `admin_permission` VALUES (111, 25, '清除应用监控数据', '/config/transferclear', '', 1, 1, 2);
+INSERT INTO `admin_permission` VALUES (112, 22, '应用监控', '/transferstatistics/index', '', 3, 1, 1);
+INSERT INTO `admin_permission` VALUES (113, 112, '调用记录', '/transferstatistics/tracinglist', '', 1, 1, 2);
+INSERT INTO `admin_permission` VALUES (114, 112, '调用入口', '/transferstatistics/transfer', '', 1, 1, 2);
+INSERT INTO `admin_permission` VALUES (115, 112, '入口调用记录', '/transferstatistics/transfertracinglist', '', 1, 1, 2);
+INSERT INTO `admin_permission` VALUES (116, 112, '调用IP', '/transferstatistics/ip', '', 1, 1, 2);
+INSERT INTO `admin_permission` VALUES (117, 112, 'IP调用记录', '/transferstatistics/iptracinglist', '', 1, 1, 2);
+INSERT INTO `admin_permission` VALUES (118, 112, '状态码', '/transferstatistics/code', '', 1, 1, 2);
+INSERT INTO `admin_permission` VALUES (119, 112, '状态码调用记录', '/transferstatistics/codetracinglist', '', 1, 1, 2);
+
+
 
 -- ----------------------------
 -- Table structure for admin_role

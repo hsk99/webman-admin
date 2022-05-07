@@ -30,10 +30,11 @@
     </form>
     <script>
         let UPLOAD_IMAGE_PATH = "/{:request()->app}/index/upload";
-        layui.use(['form', 'jquery', 'layedit', 'uploads'], function () {
+        layui.use(['form', 'jquery', 'layedit', 'uploads', 'laydate'], function () {
             let form = layui.form;
             let $ = layui.jquery;
-            let layedit = layui.layedit
+            let layedit = layui.layedit;
+            let laydate = layui.laydate;
             layedit.set({
                 uploadImage: {
                     url: UPLOAD_IMAGE_PATH

@@ -24,7 +24,7 @@ class Mail
     public static function send($toMail, $subject = '', $body = '', $isHTML = true, $config = []): array
     {
         try {
-            $config = $config ?? get_system(null, []);
+            $config = $config ?: get_system(null, []);
 
             if (
                 empty($config['smtp_host']) ||
@@ -39,10 +39,13 @@ class Mail
             if (!Container::has(PHPMailer::class)) {
                 Container::make(PHPMailer::class, []);
             }
+            /**
+             * @var PHPMailer
+             */
             $mail = Container::get(PHPMailer::class);
 
-            $mail->CharSet    = "UTF-8";
-            $mail->SMTPDebug  = 0;
+            $mail->CharSet   = "UTF-8";
+            $mail->SMTPDebug = 0;
             $mail->isSMTP();
             $mail->Host       = $config['smtp_host'];
             $mail->SMTPAuth   = true;
@@ -50,6 +53,7 @@ class Mail
             $mail->Password   = $config['smtp_pass'];
             $mail->SMTPSecure = $config['smtp_secure'];
             $mail->Port       = $config['smtp_port'];
+            $mail->From       = $config['smtp_user'];
 
             if (is_array($toMail)) {
                 foreach ($toMail as $email) {

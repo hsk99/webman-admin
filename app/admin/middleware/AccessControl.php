@@ -43,7 +43,16 @@ class AccessControl implements \Webman\MiddlewareInterface
 
                     return redirect("/" . request()->app);
                 } catch (\Throwable $th) {
-                    \Hsk99\WebmanException\RunException::report($th);
+                    switch ($th->getMessage()) {
+                        case '获取的扩展字段不存在':
+                        case '身份验证会话已过期，请重新登录！':
+                        case '身份验证令牌尚未生效':
+                        case '身份验证令牌无效':
+                            break;
+                        default:
+                            \Hsk99\WebmanException\RunException::report($th);
+                            break;
+                    }
                 }
             }
 
@@ -61,7 +70,16 @@ class AccessControl implements \Webman\MiddlewareInterface
                     return redirect("/" . request()->app)
                         ->cookie('authorization', $token['access_token'], $token['expires_in'], '/');
                 } catch (\Throwable $th) {
-                    \Hsk99\WebmanException\RunException::report($th);
+                    switch ($th->getMessage()) {
+                        case '获取的扩展字段不存在':
+                        case '身份验证会话已过期，请重新登录！':
+                        case '身份验证令牌尚未生效':
+                        case '身份验证令牌无效':
+                            break;
+                        default:
+                            \Hsk99\WebmanException\RunException::report($th);
+                            break;
+                    }
                 }
             }
 

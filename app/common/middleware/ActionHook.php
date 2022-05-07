@@ -90,7 +90,7 @@ class ActionHook implements MiddlewareInterface
             $body = $response->rawBody();
         }
 
-        $requestLog = [
+        $data = [
             'time'            => date('Y-m-d H:i:s.', $request->request_time) . substr($request->request_time, 11),   // 请求时间（包含毫秒时间）
             'message'         => 'http request',                                                                      // 描述
             'run_time'        => $runTime,                                                                            // 运行时长
@@ -106,7 +106,17 @@ class ActionHook implements MiddlewareInterface
             'response_body'   => $body ?? [],                                                                         // 响应数据
         ];
 
-        \Webman\RedisQueue\Client::send('webman_log_request', $requestLog);
+        \Webman\RedisQueue\Client::send('webman_log_request', $data);
+
+        if ("app\\" . $request->app . "\controller\TransferStatistics" !== $request->controller) {
+            $transfer = $request->controller . '::' . $request->action;
+            if ('::' === $transfer) {
+                $transfer = $request->path();
+            }
+            // 响应数据（发生异常）
+            $data['response_body'] = $response->getStatusCode() < 400 ? true : (string)$response->rawBody();
+            \Webman\RedisQueue\Client::send('webman_TransferStatistics', ['transfer' => $transfer] + $data);
+        }
     }
 
     /**
