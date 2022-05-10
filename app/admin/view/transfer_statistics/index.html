@@ -356,6 +356,7 @@
             var count = layui.count;
             var dropdown = layui.dropdown;
             var table = layui.table;
+            let date = "{$date}";
 
             laydate.render({
                 elem: ".date",
@@ -549,7 +550,7 @@
             // 调用入口
             dropdown.on('click(transferList)', function (options) {
                 var transfer = $(this).attr('transfer');
-                var url = "/{:request()->app}/transferstatistics/transfer?transfer=" + transfer;
+                var url = "/{:request()->app}/transferstatistics/transfer?date=" + date + "&transfer=" + transfer;
 
                 $("#transferIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
             });
@@ -557,7 +558,7 @@
             // 调用IP
             dropdown.on('click(ipList)', function (options) {
                 var ip = $(this).attr('ip');
-                var url = "/{:request()->app}/transferstatistics/ip?ip=" + ip;
+                var url = "/{:request()->app}/transferstatistics/ip?date=" + date + "&ip=" + ip;
 
                 $("#ipIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
             });
@@ -565,7 +566,7 @@
             // 状态码
             dropdown.on('click(codeList)', function (options) {
                 var code = $(this).attr('code');
-                var url = "/{:request()->app}/transferstatistics/code?code=" + code;
+                var url = "/{:request()->app}/transferstatistics/code?date=" + date + "&code=" + code;
 
                 $("#codeIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
             });
