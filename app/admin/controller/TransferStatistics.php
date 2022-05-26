@@ -42,41 +42,51 @@ class TransferStatistics
         $totalStatistic['cost'] = Redis::hGet('TransferStatistics:statistic:cost', $day) ?: 0;
         // 平均耗时
         $totalStatistic['averageCost'] = (0 == $totalStatistic['count']) ? 0 : round($totalStatistic['cost'] / $totalStatistic['count'] * 1000, 2);
+        // 收发流量
+        $transceivedTraffic = Redis::hGet('TransferStatistics:statistic:transceived_traffic', $day) ?: 0;
+        $transceivedTraffic = (0 == $transceivedTraffic) ? 0 : round($transceivedTraffic / 1024 / 1024, 4);
+        $totalStatistic['transceivedTraffic'] = $transceivedTraffic;
 
 
         //////
-        // 获取调用统计数据（当天时间五分钟一统计）
+        // 获取调用统计数据（当天时间一分钟一统计）
         //////
-        $chartCount        = Redis::hGetAll('TransferStatistics:statistic:count:' . $day) ?: [];
-        $chartCost         = Redis::hGetAll('TransferStatistics:statistic:cost:' . $day) ?: [];
-        $chartSuccessCount = Redis::hGetAll('TransferStatistics:statistic:success_count:' . $day) ?: [];
-        $chartErrorCount   = Redis::hGetAll('TransferStatistics:statistic:error_count:' . $day) ?: [];
+        $chartCount              = Redis::hGetAll('TransferStatistics:statistic:count:' . $day) ?: [];
+        $chartCost               = Redis::hGetAll('TransferStatistics:statistic:cost:' . $day) ?: [];
+        $chartSuccessCount       = Redis::hGetAll('TransferStatistics:statistic:success_count:' . $day) ?: [];
+        $chartErrorCount         = Redis::hGetAll('TransferStatistics:statistic:error_count:' . $day) ?: [];
+        $chartTransceivedTraffic = Redis::hGetAll('TransferStatistics:statistic:transceived_traffic:' . $day) ?: [];
+
         // 获取间隔
         $intervalList  = [];
         $time          = strtotime($day);
-        $intervalCount = (int)(ceil(time() / 300) * 300 - $time) / 300;
-        $intervalCount = $intervalCount > 288 ? 288 : $intervalCount;
+        $intervalCount = (int)(ceil(time() / 60) * 60 - $time) / 60;
+        $intervalCount = $intervalCount > 1440 ? 1440 : $intervalCount;
         for ($i = 0; $i < $intervalCount; $i++) {
-            $intervalList[] = date('YmdHi', $time + $i * 300);
+            $intervalList[] = date('YmdHi', $time + $i * 60);
         }
         $intervalList = array_merge($intervalList, array_keys($chartCount));
         sort($intervalList);
         // 组装数据
         $chartList = [];
-        array_map(function ($interval) use (&$chartList, &$chartCount, &$chartCost, &$chartSuccessCount, &$chartErrorCount) {
-            $chartList['time'][$interval]         = date('y-m-d H:i', strtotime($interval));
-            $chartList['count'][$interval]        = $chartCount[$interval] ?? 0;
-            $chartList['cost'][$interval]         = $chartCost[$interval] ?? 0;
-            $chartList['successCount'][$interval] = $chartSuccessCount[$interval] ?? 0;
-            $chartList['errorCount'][$interval]   = $chartErrorCount[$interval] ?? 0;
-            $chartList['averageCost'][$interval]  = (0 == $chartList['count'][$interval]) ? 0 : round($chartList['cost'][$interval] / $chartList['count'][$interval] * 1000, 2);
+        array_map(function ($interval) use (&$chartList, &$chartCount, &$chartCost, &$chartSuccessCount, &$chartErrorCount, &$chartTransceivedTraffic) {
+            $chartList['time'][$interval]               = date('y-m-d H:i', strtotime($interval));
+            $chartList['count'][$interval]              = $chartCount[$interval] ?? 0;
+            $chartList['cost'][$interval]               = $chartCost[$interval] ?? 0;
+            $chartList['successCount'][$interval]       = $chartSuccessCount[$interval] ?? 0;
+            $chartList['errorCount'][$interval]         = $chartErrorCount[$interval] ?? 0;
+            $chartList['averageCost'][$interval]        = (0 == $chartList['count'][$interval]) ? 0 : round($chartList['cost'][$interval] / $chartList['count'][$interval] * 1000, 2);
+            $transceivedTraffic = $chartTransceivedTraffic[$interval] ?? 0;
+            $transceivedTraffic = (0 == $transceivedTraffic) ? 0 : round($transceivedTraffic / 1024 / 1024, 4);
+            $chartList['transceivedTraffic'][$interval] = $transceivedTraffic;
         }, $intervalList);
-        $chartList['time']         = array_values($chartList['time'] ?? []);
-        $chartList['count']        = array_values($chartList['count'] ?? []);
-        $chartList['cost']         = array_values($chartList['cost'] ?? []);
-        $chartList['successCount'] = array_values($chartList['successCount'] ?? []);
-        $chartList['errorCount']   = array_values($chartList['errorCount'] ?? []);
-        $chartList['averageCost']  = array_values($chartList['averageCost'] ?? []);
+        $chartList['time']               = array_values($chartList['time'] ?? []);
+        $chartList['count']              = array_values($chartList['count'] ?? []);
+        $chartList['cost']               = array_values($chartList['cost'] ?? []);
+        $chartList['successCount']       = array_values($chartList['successCount'] ?? []);
+        $chartList['errorCount']         = array_values($chartList['errorCount'] ?? []);
+        $chartList['averageCost']        = array_values($chartList['averageCost'] ?? []);
+        $chartList['transceivedTraffic'] = array_values($chartList['transceivedTraffic'] ?? []);
 
 
         ///////
@@ -116,14 +126,18 @@ class TransferStatistics
             $error = Redis::hGet('TransferStatistics:statistic:ip_error:' . $ipTemp, $day);
             // 平均耗时
             $averageCost = (0 == $count) ? 0 : round($cost / $count * 1000, 2);
+            // 收发流量
+            $transceivedTraffic = Redis::hGet('TransferStatistics:statistic:ip_transceived_traffic:' . $ipTemp, $day);
+            $transceivedTraffic = (0 == $transceivedTraffic) ? 0 : round($transceivedTraffic / 1024 / 1024, 4);
 
             return [
-                'ip'          => $ip,
-                'count'       => $count,
-                'cost'        => $cost,
-                'success'     => $success,
-                'error'       => $error,
-                'averageCost' => $averageCost,
+                'ip'                 => $ip,
+                'count'              => $count,
+                'cost'               => $cost,
+                'success'            => $success,
+                'error'              => $error,
+                'averageCost'        => $averageCost,
+                'transceivedTraffic' => $transceivedTraffic,
             ];
         }, $ipList);
 
@@ -236,7 +250,7 @@ class TransferStatistics
         $day = date('Ymd', strtotime($date));
 
         //////
-        // 获取调用入口统计数据（当天时间五分钟一统计）
+        // 获取调用入口统计数据（当天时间一分钟一统计）
         //////
         $chartCount        = Redis::hGetAll('TransferStatistics:statistic:transfer_count:' . $transferTemp . ':' . $day) ?: [];
         $chartCost         = Redis::hGetAll('TransferStatistics:statistic:transfer_cost:' . $transferTemp . ':' . $day) ?: [];
@@ -245,10 +259,10 @@ class TransferStatistics
         // 获取间隔
         $intervalList  = [];
         $time          = strtotime($day);
-        $intervalCount = (int)(ceil(time() / 300) * 300 - $time) / 300;
-        $intervalCount = $intervalCount > 288 ? 288 : $intervalCount;
+        $intervalCount = (int)(ceil(time() / 60) * 60 - $time) / 60;
+        $intervalCount = $intervalCount > 1440 ? 1440 : $intervalCount;
         for ($i = 0; $i < $intervalCount; $i++) {
-            $intervalList[] = date('YmdHi', $time + $i * 300);
+            $intervalList[] = date('YmdHi', $time + $i * 60);
         }
         $intervalList = array_merge($intervalList, array_keys($chartCount));
         sort($intervalList);
@@ -347,39 +361,44 @@ class TransferStatistics
         $day = date('Ymd', strtotime($date));
 
         //////
-        // 获取调用IP统计数据（当天时间五分钟一统计）
+        // 获取调用IP统计数据（当天时间一分钟一统计）
         //////
-        $chartCount        = Redis::hGetAll('TransferStatistics:statistic:ip_count:' . $ipTemp . ':' . $day) ?: [];
-        $chartCost         = Redis::hGetAll('TransferStatistics:statistic:ip_cost:' . $ipTemp . ':' . $day) ?: [];
-        $chartSuccessCount = Redis::hGetAll('TransferStatistics:statistic:ip_success:' . $ipTemp . ':' . $day) ?: [];
-        $chartErrorCount   = Redis::hGetAll('TransferStatistics:statistic:ip_error:' . $ipTemp . ':' . $day) ?: [];
+        $chartCount              = Redis::hGetAll('TransferStatistics:statistic:ip_count:' . $ipTemp . ':' . $day) ?: [];
+        $chartCost               = Redis::hGetAll('TransferStatistics:statistic:ip_cost:' . $ipTemp . ':' . $day) ?: [];
+        $chartSuccessCount       = Redis::hGetAll('TransferStatistics:statistic:ip_success:' . $ipTemp . ':' . $day) ?: [];
+        $chartErrorCount         = Redis::hGetAll('TransferStatistics:statistic:ip_error:' . $ipTemp . ':' . $day) ?: [];
+        $chartTransceivedTraffic = Redis::hGetAll('TransferStatistics:statistic:ip_transceived_traffic:' . $ipTemp . ':' . $day) ?: [];
 
         // 获取间隔
         $intervalList  = [];
         $time          = strtotime($day);
-        $intervalCount = (int)(ceil(time() / 300) * 300 - $time) / 300;
-        $intervalCount = $intervalCount > 288 ? 288 : $intervalCount;
+        $intervalCount = (int)(ceil(time() / 60) * 60 - $time) / 60;
+        $intervalCount = $intervalCount > 1440 ? 1440 : $intervalCount;
         for ($i = 0; $i < $intervalCount; $i++) {
-            $intervalList[] = date('YmdHi', $time + $i * 300);
+            $intervalList[] = date('YmdHi', $time + $i * 60);
         }
         $intervalList = array_merge($intervalList, array_keys($chartCount));
         sort($intervalList);
         // 组装数据
         $chartList = [];
-        array_map(function ($interval) use (&$chartList, &$chartCount, &$chartCost, &$chartSuccessCount, &$chartErrorCount) {
-            $chartList['time'][$interval]         = date('y-m-d H:i', strtotime($interval));
-            $chartList['count'][$interval]        = $chartCount[$interval] ?? 0;
-            $chartList['cost'][$interval]         = $chartCost[$interval] ?? 0;
-            $chartList['successCount'][$interval] = $chartSuccessCount[$interval] ?? 0;
-            $chartList['errorCount'][$interval]   = $chartErrorCount[$interval] ?? 0;
-            $chartList['averageCost'][$interval]  = (0 == $chartList['count'][$interval]) ? 0 : round($chartList['cost'][$interval] / $chartList['count'][$interval] * 1000, 2);
+        array_map(function ($interval) use (&$chartList, &$chartCount, &$chartCost, &$chartSuccessCount, &$chartErrorCount, &$chartTransceivedTraffic) {
+            $chartList['time'][$interval]               = date('y-m-d H:i', strtotime($interval));
+            $chartList['count'][$interval]              = $chartCount[$interval] ?? 0;
+            $chartList['cost'][$interval]               = $chartCost[$interval] ?? 0;
+            $chartList['successCount'][$interval]       = $chartSuccessCount[$interval] ?? 0;
+            $chartList['errorCount'][$interval]         = $chartErrorCount[$interval] ?? 0;
+            $chartList['averageCost'][$interval]        = (0 == $chartList['count'][$interval]) ? 0 : round($chartList['cost'][$interval] / $chartList['count'][$interval] * 1000, 2);
+            $transceivedTraffic = $chartTransceivedTraffic[$interval] ?? 0;
+            $transceivedTraffic = (0 == $transceivedTraffic) ? 0 : round($transceivedTraffic / 1024 / 1024, 4);
+            $chartList['transceivedTraffic'][$interval] = $transceivedTraffic;
         }, $intervalList);
-        $chartList['time']         = array_values($chartList['time'] ?? []);
-        $chartList['count']        = array_values($chartList['count'] ?? []);
-        $chartList['cost']         = array_values($chartList['cost'] ?? []);
-        $chartList['successCount'] = array_values($chartList['successCount'] ?? []);
-        $chartList['errorCount']   = array_values($chartList['errorCount'] ?? []);
-        $chartList['averageCost']  = array_values($chartList['averageCost'] ?? []);
+        $chartList['time']               = array_values($chartList['time'] ?? []);
+        $chartList['count']              = array_values($chartList['count'] ?? []);
+        $chartList['cost']               = array_values($chartList['cost'] ?? []);
+        $chartList['successCount']       = array_values($chartList['successCount'] ?? []);
+        $chartList['errorCount']         = array_values($chartList['errorCount'] ?? []);
+        $chartList['averageCost']        = array_values($chartList['averageCost'] ?? []);
+        $chartList['transceivedTraffic'] = array_values($chartList['transceivedTraffic'] ?? []);
 
         return view('transfer_statistics/ip', [
             'date'      => $date,
@@ -457,7 +476,7 @@ class TransferStatistics
         $day = date('Ymd', strtotime($date));
 
         //////
-        // 获取状态码统计数据（当天时间五分钟一统计）
+        // 获取状态码统计数据（当天时间一分钟一统计）
         //////
         $chartCount = Redis::hGetAll('TransferStatistics:statistic:code_count:' . $code . ':' . $day) ?: [];
         $chartCost  = Redis::hGetAll('TransferStatistics:statistic:code_cost:' . $code . ':' . $day) ?: [];
@@ -465,10 +484,10 @@ class TransferStatistics
         // 获取间隔
         $intervalList  = [];
         $time          = strtotime($day);
-        $intervalCount = (int)(ceil(time() / 300) * 300 - $time) / 300;
-        $intervalCount = $intervalCount > 288 ? 288 : $intervalCount;
+        $intervalCount = (int)(ceil(time() / 60) * 60 - $time) / 60;
+        $intervalCount = $intervalCount > 1440 ? 1440 : $intervalCount;
         for ($i = 0; $i < $intervalCount; $i++) {
-            $intervalList[] = date('YmdHi', $time + $i * 300);
+            $intervalList[] = date('YmdHi', $time + $i * 60);
         }
         $intervalList = array_merge($intervalList, array_keys($chartCount));
         sort($intervalList);

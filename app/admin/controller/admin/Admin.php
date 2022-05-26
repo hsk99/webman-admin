@@ -405,6 +405,10 @@ class Admin
                         });
                     } else {
                         $result = AdminAdminModel::destroy($ids, true);
+
+                        array_map(function ($id) {
+                            \teamones\casbin\Enforcer::deletePermissionsForUser('admin_admin_' . $id);
+                        }, $ids);
                     }
 
                     if ($result) {

@@ -2,7 +2,6 @@
 
 namespace support\hsk99\util;
 
-use support\Container;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class Mail
@@ -36,13 +35,7 @@ class Mail
                 throw new \Exception('未配置邮箱参数', 500);
             }
 
-            if (!Container::has(PHPMailer::class)) {
-                Container::make(PHPMailer::class, []);
-            }
-            /**
-             * @var PHPMailer
-             */
-            $mail = Container::get(PHPMailer::class);
+            $mail = new PHPMailer();
 
             $mail->CharSet   = "UTF-8";
             $mail->SMTPDebug = 0;
@@ -69,12 +62,12 @@ class Mail
             $mail->AltBody = $body;
 
             if ($mail->send()) {
-                return ['code' => '200', 'msg' => '发送成功'];
+                return ['code' => 200, 'msg' => '发送成功'];
             } else {
-                return ['code' => '400', 'msg' => $mail->ErrorInfo];
+                return ['code' => 400, 'msg' => $mail->ErrorInfo];
             }
         } catch (\Throwable $th) {
-            return ['code' => '400', 'msg' => $th->getMessage()];
+            return ['code' => 400, 'msg' => $th->getMessage()];
         }
     }
 }

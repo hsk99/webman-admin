@@ -27,7 +27,7 @@
                         <div class="layui-card">
                             <div class="layui-card-body">
                                 <div class="layui-tab custom-tab layui-tab-brief">
-                                    <div id="countStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    <div id="transceivedTrafficStatistics" style="background-color:#ffffff;min-height:190px;">
                                     </div>
                                 </div>
                             </div>
@@ -43,7 +43,17 @@
                             </div>
                         </div>
                     </div>
-                    <div class="layui-col-md6">
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-body">
+                                <div class="layui-tab custom-tab layui-tab-brief">
+                                    <div id="countStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4">
                         <div class="layui-card">
                             <div class="layui-card-body">
                                 <div class="layui-tab custom-tab layui-tab-brief">
@@ -53,7 +63,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="layui-col-md6">
+                    <div class="layui-col-md4">
                         <div class="layui-card">
                             <div class="layui-card-body">
                                 <div class="layui-tab custom-tab layui-tab-brief">
@@ -81,19 +91,21 @@
         layui.use(['table'], function () {
             var table = layui.table;
 
-            countStatisticsObject = echarts.init(document.getElementById('countStatistics'));
+            transceivedTrafficStatisticsObject = echarts.init(document.getElementById('transceivedTrafficStatistics'));
             averageCostStatisticsObject = echarts.init(document.getElementById('averageCostStatistics'));
+            countStatisticsObject = echarts.init(document.getElementById('countStatistics'));
             successCountStatisticsObject = echarts.init(document.getElementById('successCountStatistics'));
             errorCountStatisticsObject = echarts.init(document.getElementById('errorCountStatistics'));
 
             chartList = eval("(" + `{$chartList}` + ")");
 
-            statistics('请求数', chartList.time, chartList.count, '126,211,244', countStatisticsObject);
+            statistics('收发流量', chartList.time, chartList.transceivedTraffic, '26,250,41', transceivedTrafficStatisticsObject);
             statistics('响应时间', chartList.time, chartList.averageCost, '250,200,88', averageCostStatisticsObject);
+            statistics('请求数', chartList.time, chartList.count, '126,211,244', countStatisticsObject);
             statistics('成功数', chartList.time, chartList.successCount, '145,204,117', successCountStatisticsObject);
             statistics('异常数', chartList.time, chartList.errorCount, '255,112,112', errorCountStatisticsObject);
 
-            echarts.connect([countStatisticsObject, averageCostStatisticsObject, successCountStatisticsObject, errorCountStatisticsObject]);
+            echarts.connect([ transceivedTrafficStatisticsObject, averageCostStatisticsObject, countStatisticsObject,successCountStatisticsObject, errorCountStatisticsObject]);
 
             function statistics(title, x, y, color, object) {
                 var option = {
@@ -108,7 +120,7 @@
                         position: function (point, params, dom, rect, size) {
                             return [point[0], '10%'];
                         },
-                        extraCssText: 'width:130px;'
+                        extraCssText: 'width:150px;'
                     },
                     dataZoom: [{
                         type: 'slider',

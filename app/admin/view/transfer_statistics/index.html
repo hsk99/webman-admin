@@ -68,27 +68,33 @@
     </div>
 
     <div class="layui-row layui-col-space10">
-        <div class="layui-col-xs6 layui-col-md3">
+        <div class="layui-col-xs12 layui-col-md6">
             <div class="layui-card top-panel">
-                <div class="layui-card-header">请求数</div>
+                <div class="layui-card-header">收发流量（mb）</div>
                 <div class="layui-card-body">
                     <div class="layui-row layui-col-space5">
-                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;" id="count">
+                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
+                            id="transceivedTraffic">
                             0
                         </div>
                         <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
-                            <svg t="1651028839223" class="icon" viewBox="0 0 1025 1024" version="1.1"
-                                xmlns="http://www.w3.org/2000/svg" p-id="2605" width="200" height="200">
+                            <svg t="1653467529867" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="10295" data-spm-anchor-id="a313x.7781069.0.i12"
+                                width="200" height="200">
                                 <path
-                                    d="M942.08 665.6l0.512-90.624V141.824H269.824l-81.92 0.512C187.904 91.648 230.4 51.2 283.136 51.2h646.656c52.224 0 95.232 44.544 95.232 95.744V573.44c-1.024 38.4-30.208 92.16-82.944 92.16z m-68.608-376.32v462.336c0 50.688-41.984 89.088-94.72 89.088H482.304v72.192h179.712c13.312 0 24.064 19.456 24.064 31.744 0 13.312-11.264 28.672-24.064 28.672H209.92c-13.312 0-24.064-15.872-24.064-28.672 0-13.312 11.264-31.744 24.064-31.744h172.032v-72.192H94.72C43.008 840.192 0 802.816 0 751.104V289.28c0-50.688 41.984-95.744 94.72-95.744H778.24c52.736-0.512 95.744 44.544 95.232 95.744z m-275.456 163.328l-53.76-93.696s-16.896-15.36-28.16 3.072L504.32 389.12S321.536 317.44 278.528 504.832c0 0 48.128-108.032 195.584-51.2l-12.288 26.624s-10.752 26.112 24.576 20.48l98.816-23.04c0.512 0 22.528-6.144 12.8-25.088z m-185.856 123.392l11.776-26.624s10.752-26.112-24.576-19.968l-98.304 25.088s-22.016 6.144-11.776 25.088l56.832 91.648s16.896 15.36 27.648-3.584l11.264-26.624s184.32 67.584 222.208-120.832c-0.512 0-46.08 108.544-195.072 55.808z"
-                                    fill="#7ED3F4" p-id="2606"></path>
+                                    d="M512 960C264.96 960 64 759.04 64 512S264.96 64 512 64 960 264.96 960 512 759.04 960 512 960z m0-853.333333c-223.573333 0-405.333333 181.76-405.333333 405.333333s181.76 405.333333 405.333333 405.333333 405.333333-181.76 405.333333-405.333333-181.76-405.333333-405.333333-405.333333z"
+                                    fill="#65c8ff" p-id="10296" data-spm-anchor-id="a313x.7781069.0.i8" class=""></path>
+                                <path
+                                    d="M531.2 768h-2.56a21.76 21.76 0 0 1-18.346667-17.493333L446.72 371.2l-70.4 235.093333c-2.56 8.96-11.093333 15.36-20.48 15.36H234.666667c-11.946667 0-21.333333-9.386667-21.333334-21.333333s9.386667-21.333333 21.333334-21.333333h105.386666l92.16-307.626667c2.986667-9.813333 12.373333-15.786667 21.76-15.36a21.333333 21.333333 0 0 1 19.626667 17.92l66.56 398.506667 68.266667-155.733334a21.589333 21.589333 0 0 1 34.986666-6.4l67.413334 68.693334h78.08c11.946667 0 21.333333 9.386667 21.333333 21.333333s-9.386667 21.333333-21.333333 21.333333h-87.04c-5.546667 0-11.093333-2.133333-15.36-6.4l-51.626667-52.48-84.48 192.853334c-2.986667 7.253333-11.093333 12.373333-19.2 12.373333z"
+                                    fill="#1afa29" p-id="10297" data-spm-anchor-id="a313x.7781069.0.i10" class="">
+                                </path>
                             </svg>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="layui-col-xs6 layui-col-md3">
+        <div class="layui-col-xs12 layui-col-md6">
             <div class="layui-card top-panel">
                 <div class="layui-card-header">平均响应时间（ms）</div>
                 <div class="layui-card-body">
@@ -116,7 +122,27 @@
                 </div>
             </div>
         </div>
-        <div class="layui-col-xs6 layui-col-md3">
+        <div class="layui-col-xs12 layui-col-md4">
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">请求数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;" id="count">
+                            0
+                        </div>
+                        <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                            <svg t="1651028839223" class="icon" viewBox="0 0 1025 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="2605" width="200" height="200">
+                                <path
+                                    d="M942.08 665.6l0.512-90.624V141.824H269.824l-81.92 0.512C187.904 91.648 230.4 51.2 283.136 51.2h646.656c52.224 0 95.232 44.544 95.232 95.744V573.44c-1.024 38.4-30.208 92.16-82.944 92.16z m-68.608-376.32v462.336c0 50.688-41.984 89.088-94.72 89.088H482.304v72.192h179.712c13.312 0 24.064 19.456 24.064 31.744 0 13.312-11.264 28.672-24.064 28.672H209.92c-13.312 0-24.064-15.872-24.064-28.672 0-13.312 11.264-31.744 24.064-31.744h172.032v-72.192H94.72C43.008 840.192 0 802.816 0 751.104V289.28c0-50.688 41.984-95.744 94.72-95.744H778.24c52.736-0.512 95.744 44.544 95.232 95.744z m-275.456 163.328l-53.76-93.696s-16.896-15.36-28.16 3.072L504.32 389.12S321.536 317.44 278.528 504.832c0 0 48.128-108.032 195.584-51.2l-12.288 26.624s-10.752 26.112 24.576 20.48l98.816-23.04c0.512 0 22.528-6.144 12.8-25.088z m-185.856 123.392l11.776-26.624s10.752-26.112-24.576-19.968l-98.304 25.088s-22.016 6.144-11.776 25.088l56.832 91.648s16.896 15.36 27.648-3.584l11.264-26.624s184.32 67.584 222.208-120.832c-0.512 0-46.08 108.544-195.072 55.808z"
+                                    fill="#7ED3F4" p-id="2606"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs12 layui-col-md4">
             <div class="layui-card top-panel">
                 <div class="layui-card-header">成功数</div>
                 <div class="layui-card-body">
@@ -138,7 +164,7 @@
                 </div>
             </div>
         </div>
-        <div class="layui-col-xs6 layui-col-md3">
+        <div class="layui-col-xs12 layui-col-md4">
             <div class="layui-card top-panel">
                 <div class="layui-card-header">异常数</div>
                 <div class="layui-card-body">
@@ -171,7 +197,8 @@
             <div class="layui-card">
                 <div class="layui-card-body">
                     <div class="layui-tab custom-tab layui-tab-brief">
-                        <div id="countStatistics" style="background-color:#ffffff;min-height:250px;padding: 10px">
+                        <div id="transceivedTrafficStatistics"
+                            style="background-color:#ffffff;min-height:250px;padding: 10px">
                         </div>
                     </div>
                 </div>
@@ -187,7 +214,17 @@
                 </div>
             </div>
         </div>
-        <div class="layui-col-md6">
+        <div class="layui-col-md4">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab custom-tab layui-tab-brief">
+                        <div id="countStatistics" style="background-color:#ffffff;min-height:250px;padding: 10px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
             <div class="layui-card">
                 <div class="layui-card-body">
                     <div class="layui-tab custom-tab layui-tab-brief">
@@ -198,7 +235,7 @@
                 </div>
             </div>
         </div>
-        <div class="layui-col-md6">
+        <div class="layui-col-md4">
             <div class="layui-card">
                 <div class="layui-card-body">
                     <div class="layui-tab custom-tab layui-tab-brief">
@@ -226,8 +263,10 @@
                                     <thead>
                                         <tr>
                                             <th lay-data="{field:'ip',sort:true,minWidth:130}">IP</th>
+                                            <th lay-data="{field:'transceivedTraffic',sort:true,minWidth:90}">收发流量（mb）
+                                            </th>
                                             <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
-                                            <th lay-data="{field:'averageCost',sort:true,minWidth:102}">平均耗时</th>
+                                            <th lay-data="{field:'averageCost',sort:true,minWidth:102}">平均耗时（ms）</th>
                                             <th lay-data="{field:'error',sort:true,minWidth:90}">异常数</th>
                                         </tr>
                                     </thead>
@@ -235,8 +274,9 @@
                                         {foreach name='ipStatistic' item="vo"}
                                         <tr>
                                             <td>{$vo.ip}</td>
+                                            <td>{$vo.transceivedTraffic}</td>
                                             <td>{$vo.count}</td>
-                                            <td>{$vo.averageCost}ms</td>
+                                            <td>{$vo.averageCost}</td>
                                             <td>{$vo.error}</td>
                                         </tr>
                                         {/foreach}
@@ -249,7 +289,7 @@
                                         <tr>
                                             <th lay-data="{field:'transfer',sort:true,minWidth:320}">调用</th>
                                             <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
-                                            <th lay-data="{field:'averageCost',sort:true,minWidth:102}">平均耗时</th>
+                                            <th lay-data="{field:'averageCost',sort:true,minWidth:102}">平均耗时（ms）</th>
                                             <th lay-data="{field:'error',sort:true,minWidth:90}">异常数</th>
                                         </tr>
                                     </thead>
@@ -258,7 +298,7 @@
                                         <tr>
                                             <td>{$vo.transfer}</td>
                                             <td>{$vo.count}</td>
-                                            <td>{$vo.averageCost}ms</td>
+                                            <td>{$vo.averageCost}</td>
                                             <td>{$vo.error}</td>
                                         </tr>
                                         {/foreach}
@@ -365,6 +405,12 @@
                 format: 'yyyy-MM-dd',
             })
 
+            count.up("transceivedTraffic", {
+                time: 20,
+                num: eval("(" + `{$totalStatistic.transceivedTraffic}` + ")"),
+                regulator: 1,
+                bit: 4
+            })
             count.up("count", {
                 time: 20,
                 num: eval("(" + `{$totalStatistic.count}` + ")"),
@@ -387,23 +433,26 @@
                 regulator: 1
             })
 
-            countStatisticsObject = echarts.init(document.getElementById('countStatistics'));
+            transceivedTrafficStatisticsObject = echarts.init(document.getElementById('transceivedTrafficStatistics'));
             averageCostStatisticsObject = echarts.init(document.getElementById('averageCostStatistics'));
+            countStatisticsObject = echarts.init(document.getElementById('countStatistics'));
             successCountStatisticsObject = echarts.init(document.getElementById('successCountStatistics'));
             errorCountStatisticsObject = echarts.init(document.getElementById('errorCountStatistics'));
 
             chartList = eval("(" + `{$chartList}` + ")");
 
-            statistics('请求数', chartList.time, chartList.count, '126,211,244', countStatisticsObject);
+            statistics('收发流量', chartList.time, chartList.transceivedTraffic, '26,250,41', transceivedTrafficStatisticsObject);
             statistics('响应时间', chartList.time, chartList.averageCost, '250,200,88', averageCostStatisticsObject);
+            statistics('请求数', chartList.time, chartList.count, '126,211,244', countStatisticsObject);
             statistics('成功数', chartList.time, chartList.successCount, '145,204,117', successCountStatisticsObject);
             statistics('异常数', chartList.time, chartList.errorCount, '255,112,112', errorCountStatisticsObject);
 
-            echarts.connect([countStatisticsObject, averageCostStatisticsObject, successCountStatisticsObject, errorCountStatisticsObject]);
+            echarts.connect([transceivedTrafficStatisticsObject, averageCostStatisticsObject, countStatisticsObject, successCountStatisticsObject, errorCountStatisticsObject]);
 
             window.onresize = function () {
-                countStatisticsObject.resize();
+                transceivedTrafficStatisticsObject.resize();
                 averageCostStatisticsObject.resize();
+                countStatisticsObject.resize();
                 successCountStatisticsObject.resize();
                 errorCountStatisticsObject.resize();
             }
@@ -421,7 +470,7 @@
                         position: function (point, params, dom, rect, size) {
                             return [point[0], '10%'];
                         },
-                        extraCssText: 'width:130px;'
+                        extraCssText: 'width:150px;'
                     },
                     dataZoom: [{
                         type: 'slider',

@@ -248,6 +248,10 @@ class Role
                         });
                     } else {
                         $result = AdminRoleModel::destroy($ids, true);
+
+                        array_map(function ($id) {
+                            \teamones\casbin\Enforcer::deletePermissionsForUser('admin_role_' . $id);
+                        }, $ids);
                     }
 
                     if ($result) {

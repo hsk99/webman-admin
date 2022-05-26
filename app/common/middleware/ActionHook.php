@@ -90,20 +90,33 @@ class ActionHook implements MiddlewareInterface
             $body = $response->rawBody();
         }
 
+        if (!empty($request->header('content-length'))) {
+            $requestLen = $request->header('content-length');
+        } else {
+            $requestLen = strlen($request->rawBuffer());
+        }
+
+        if (null !== $response->file) {
+            $fileLen = (0 === $response->file['length']) ? filesize($response->file['file']) : $response->file['length'];
+        } else {
+            $fileLen = 0;
+        }
+
         $data = [
-            'time'            => date('Y-m-d H:i:s.', $request->request_time) . substr($request->request_time, 11),   // 请求时间（包含毫秒时间）
-            'message'         => 'http request',                                                                      // 描述
-            'run_time'        => $runTime,                                                                            // 运行时长
-            'ip'              => $request->getRealIp($safe_mode = true) ?? '',                                        // 请求客户端IP
-            'url'             => $request->fullUrl() ?? '',                                                           // 请求URL
-            'method'          => $request->method() ?? '',                                                            // 请求方法
-            'request_param'   => $request->all() ?? [],                                                               // 请求参数
-            'request_header'  => $request->header() ?? [],                                                            // 请求头
-            'cookie'          => $request->cookie() ?? [],                                                            // 请求cookie
-            'session'         => $request->session()->all() ?? [],                                                    // 请求session
-            'response_code'   => $response->getStatusCode() ?? '',                                                    // 响应码
-            'response_header' => $response->getHeaders() ?? [],                                                       // 响应头
-            'response_body'   => $body ?? [],                                                                         // 响应数据
+            'transceived_traffic' => $requestLen + strlen($response) + $fileLen,                                          // 收发流量
+            'time'                => date('Y-m-d H:i:s.', $request->request_time) . substr($request->request_time, 11),   // 请求时间（包含毫秒时间）
+            'message'             => 'http request',                                                                      // 描述
+            'run_time'            => $runTime,                                                                            // 运行时长
+            'ip'                  => $request->getRealIp($safe_mode = true) ?? '',                                        // 请求客户端IP
+            'url'                 => $request->fullUrl() ?? '',                                                           // 请求URL
+            'method'              => $request->method() ?? '',                                                            // 请求方法
+            'request_param'       => $request->all() ?? [],                                                               // 请求参数
+            'request_header'      => $request->header() ?? [],                                                            // 请求头
+            'cookie'              => $request->cookie() ?? [],                                                            // 请求cookie
+            'session'             => $request->session()->all() ?? [],                                                    // 请求session
+            'response_code'       => $response->getStatusCode() ?? '',                                                    // 响应码
+            'response_header'     => $response->getHeaders() ?? [],                                                       // 响应头
+            'response_body'       => $body ?? [],                                                                         // 响应数据
         ];
 
         \Webman\RedisQueue\Client::send('webman_log_request', $data);
