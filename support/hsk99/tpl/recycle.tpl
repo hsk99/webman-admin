@@ -50,7 +50,7 @@
             let $ = layui.jquery;
             let common = layui.common;
             let laydate = layui.laydate;
-            let MODULE_PATH = "/{:request()->app}/{{$left}}/{{$right}}/";
+            let MODULE_PATH = "/{:request()->app}/{{$left}}/{{$right_hump}}/";
             {{$js_search}}
             let cols = [
                 [{
