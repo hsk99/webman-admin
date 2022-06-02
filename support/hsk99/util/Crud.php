@@ -221,9 +221,9 @@ class Crud
     public static function getRecycle($tpl)
     {
         return str_replace(
-            ['{{$ename}}', '{{$table_hump}}', '{{$left}}', '{{$right}}', '{{$index_search}}', '{{$index_list}}', '{{$js_search}}'],
+            ['{{$ename}}', '{{$table_hump}}', '{{$left}}', '{{$right_hump}}', '{{$index_search}}', '{{$index_list}}', '{{$js_search}}'],
             [
-                self::$data['ename'], self::$data['table_hump'], self::$data['left'], self::$data['right'], implode("", self::$data['index_search'] ?? []), implode("", self::$data['index_list'] ?? []),
+                self::$data['ename'], self::$data['table_hump'], self::$data['left'], strtolower(self::$data['right_hump']), implode("", self::$data['index_search'] ?? []), implode("", self::$data['index_list'] ?? []),
                 implode("", self::$data['js_search'] ?? [])
             ],
             file_get_contents($tpl)
