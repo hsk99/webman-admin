@@ -7,7 +7,7 @@ use support\Redis;
 class TransferStatistics implements \Webman\RedisQueue\Consumer
 {
     /**
-     * 后台访问队列
+     * 应用监控队列
      *
      * @var string
      */

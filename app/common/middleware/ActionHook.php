@@ -10,6 +10,11 @@ use Webman\Route;
 
 class ActionHook implements MiddlewareInterface
 {
+    /**
+     * @var string
+     */
+    public $sqlLogs = '';
+
     public function process(Request $request, callable $next): Response
     {
         $request->request_time = microtime(true);
@@ -103,9 +108,9 @@ class ActionHook implements MiddlewareInterface
         }
 
         $data = [
-            'transceived_traffic' => $requestLen + strlen($response) + $fileLen,                                          // 收发流量
             'time'                => date('Y-m-d H:i:s.', $request->request_time) . substr($request->request_time, 11),   // 请求时间（包含毫秒时间）
             'message'             => 'http request',                                                                      // 描述
+            'transceived_traffic' => $requestLen + strlen($response) + $fileLen,                                          // 收发流量
             'run_time'            => $runTime,                                                                            // 运行时长
             'ip'                  => $request->getRealIp($safe_mode = true) ?? '',                                        // 请求客户端IP
             'url'                 => $request->fullUrl() ?? '',                                                           // 请求URL
@@ -119,15 +124,46 @@ class ActionHook implements MiddlewareInterface
             'response_body'       => $body ?? [],                                                                         // 响应数据
         ];
 
+        // 记录详细请求日志
         \Webman\RedisQueue\Client::send('webman_log_request', $data);
 
+        // 记录请求日志
+        $logs = $data['message'] . ' ' . $data['ip'] . ' ' . $data['method'] . ' ' . trim($data['url'], '/') . ' [' . $data['run_time'] . "s]\n";
+        if ('POST' === $data['method']) {
+            $logs .= "[POST] " . var_export($request->post(), true) . "\n";
+        }
+        static $initialized;
+        if (!$initialized) {
+            if (class_exists(\think\facade\Db::class)) {
+                \think\facade\Db::listen(function ($sql, $runtime, $master) {
+                    if ($sql === 'select 1') {
+                        return;
+                    }
+
+                    $this->sqlLogs .= "[SQL] " . trim($sql) . " [ RunTime:{$runtime}s ]\n";
+                });
+            }
+            $initialized = true;
+        }
+        $logs .= $this->sqlLogs;
+        $this->sqlLogs = '';
+        if (method_exists($response, 'exception') && $exception = $response->exception()) {
+            $logs .= "[EXCEPTION] {$exception}\n";
+        }
+        \support\Log::info($logs, ['time' => $data['time']]);
+
+        // 应用监控
         if ("app\\" . $request->app . "\controller\TransferStatistics" !== $request->controller) {
             $transfer = $request->controller . '::' . $request->action;
             if ('::' === $transfer) {
                 $transfer = $request->path();
             }
             // 响应数据（发生异常）
-            $data['response_body'] = $response->getStatusCode() < 400 ? true : (string)$response->rawBody();
+            if (method_exists($response, 'exception') && $exception = $response->exception()) {
+                $data['response_body'] = (string)$exception;
+            } else {
+                $data['response_body'] = true;
+            }
             \Webman\RedisQueue\Client::send('webman_TransferStatistics', ['transfer' => $transfer] + $data);
         }
     }
