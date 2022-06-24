@@ -15,6 +15,11 @@ class ActionHook implements MiddlewareInterface
      */
     public $sqlLogs = '';
 
+    /**
+     * @var string
+     */
+    public $redisLogs = '';
+
     public function process(Request $request, callable $next): Response
     {
         $request->request_time = microtime(true);
@@ -87,12 +92,16 @@ class ActionHook implements MiddlewareInterface
     {
         $runTime = ($response->response_time - $request->request_time) ?? 0;
 
-        if (strpos($response->rawBody(), '<!DOCTYPE html>') !== false || strpos($response->rawBody(), '<h1>') !== false) {
-            $body = 'html view';
-        } else if (strpos($response->rawBody(), 'PNG') !== false) {
-            $body = 'captcha';
-        } else {
-            $body = $response->rawBody();
+        switch (true) {
+            case method_exists($response, 'exception') && $exception = $response->exception():
+                $body = (string)$exception;
+                break;
+            case 'application/json' === strtolower($response->getHeader('Content-Type')):
+                $body = json_decode($response->rawBody(), true);
+                break;
+            default:
+                $body = 'Non Json data';
+                break;
         }
 
         if (!empty($request->header('content-length'))) {
@@ -107,6 +116,53 @@ class ActionHook implements MiddlewareInterface
             $fileLen = 0;
         }
 
+        static $initialized;
+        if (!$initialized) {
+            if (class_exists(\think\facade\Db::class)) {
+                \think\facade\Db::listen(function ($sql, $runtime, $master) {
+                    if ($sql === 'select 1' || !is_numeric($runtime)) {
+                        return;
+                    }
+
+                    $this->sqlLogs .= "[SQL] " . trim($sql) . " [ RunTime: " . $runtime * 1000 . " ms ]\n";
+                });
+            }
+
+            if (class_exists(\Illuminate\Redis\Events\CommandExecuted::class)) {
+                foreach (config('redis', []) as $key => $config) {
+                    if (strpos($key, 'redis-queue') !== false) {
+                        continue;
+                    }
+                    try {
+                        \support\Redis::connection($key)->listen(function (\Illuminate\Redis\Events\CommandExecuted $command) use ($key) {
+                            $parameters = array_map(function ($item) {
+                                if (is_array($item)) {
+                                    return json_encode($item, 320);
+                                }
+                                return $item;
+                            }, $command->parameters);
+                            $parameters = implode('\', \'', $parameters);
+
+                            if ('get' === $command->command && 'ping' === $parameters) {
+                                return;
+                            }
+
+                            $this->redisLogs .= "[Redis] [connection:$key] Redis::{$command->command}('" . $parameters . "') [ RunTime: {$command->time} ms ]\n";
+                        });
+                    } catch (\Throwable $e) {
+                    }
+                }
+            }
+
+            $initialized = true;
+        }
+
+        $sqlLogsAll   = str_replace('[SQL] ', '', $this->sqlLogs);
+        $sqlLogsAll   = explode("\n", $sqlLogsAll);
+        $sqlLogsAll   = array_filter($sqlLogsAll);
+        $redisLogsAll = str_replace('[Redis] ', '', $this->redisLogs);
+        $redisLogsAll = explode("\n", $redisLogsAll);
+        $redisLogsAll = array_filter($redisLogsAll);
         $data = [
             'time'                => date('Y-m-d H:i:s.', $request->request_time) . substr($request->request_time, 11),   // 请求时间（包含毫秒时间）
             'message'             => 'http request',                                                                      // 描述
@@ -122,6 +178,8 @@ class ActionHook implements MiddlewareInterface
             'response_code'       => $response->getStatusCode() ?? '',                                                    // 响应码
             'response_header'     => $response->getHeaders() ?? [],                                                       // 响应头
             'response_body'       => $body ?? [],                                                                         // 响应数据
+            'sql'                 => $sqlLogsAll ?? [],                                                                   // 运行SQL
+            'redis'               => $redisLogsAll ?? [],                                                                 // 运行Redis
         ];
 
         // 记录详细请求日志
@@ -132,21 +190,10 @@ class ActionHook implements MiddlewareInterface
         if ('POST' === $data['method']) {
             $logs .= "[POST] " . var_export($request->post(), true) . "\n";
         }
-        static $initialized;
-        if (!$initialized) {
-            if (class_exists(\think\facade\Db::class)) {
-                \think\facade\Db::listen(function ($sql, $runtime, $master) {
-                    if ($sql === 'select 1') {
-                        return;
-                    }
-
-                    $this->sqlLogs .= "[SQL] " . trim($sql) . " [ RunTime:{$runtime}s ]\n";
-                });
-            }
-            $initialized = true;
-        }
         $logs .= $this->sqlLogs;
+        $logs .= $this->redisLogs;
         $this->sqlLogs = '';
+        $this->redisLogs = '';
         if (method_exists($response, 'exception') && $exception = $response->exception()) {
             $logs .= "[EXCEPTION] {$exception}\n";
         }
@@ -157,12 +204,6 @@ class ActionHook implements MiddlewareInterface
             $transfer = $request->controller . '::' . $request->action;
             if ('::' === $transfer) {
                 $transfer = $request->path();
-            }
-            // 响应数据（发生异常）
-            if (method_exists($response, 'exception') && $exception = $response->exception()) {
-                $data['response_body'] = (string)$exception;
-            } else {
-                $data['response_body'] = true;
             }
             \Webman\RedisQueue\Client::send('webman_TransferStatistics', ['transfer' => $transfer] + $data);
         }
