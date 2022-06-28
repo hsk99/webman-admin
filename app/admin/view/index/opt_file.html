@@ -133,6 +133,9 @@
                         $("#" + opt + "-url", window.parent.document).attr('value', obj.data.href);
                         $("#" + opt + "-ext", window.parent.document).attr('value', obj.data.ext);
                         $("#" + opt + "-size", window.parent.document).attr('value', obj.data.size);
+
+                        $("#" + opt + "", window.parent.document).siblings('input').attr('value', obj.data.href);
+                        $("#" + opt + "", window.parent.document).siblings('div').find('img').attr('src', obj.data.href);
                         var index = parent.layer.getFrameIndex(window.name);
                         parent.layer.close(index);
                     }
