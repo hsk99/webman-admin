@@ -14,6 +14,7 @@ if (is_file(config_path() . '/app.php')) {
 
 return [
     'enable'   => true,
+    'debug'    => true,
     'notice'   => true,
     'interval' => 30,
     'project'  => $app['project'] ?? 'webman-admin',
