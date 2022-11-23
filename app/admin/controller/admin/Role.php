@@ -132,7 +132,7 @@ class Role
     }
 
     /**
-     * 用户分配直接权限
+     * 分配权限
      *
      * @author HSK
      * @date 2022-03-23 21:22:45
@@ -167,6 +167,7 @@ class Role
                 if ($adminRolePermissionDelete && $adminRolePermissionCreate && $adminRoleUpdate) {
                     AdminRoleModel::commit();
 
+                    \teamones\casbin\Enforcer::deletePermissionsForUser('admin_role_' . request()->input('id'));
                     if (request()->input('permissions')) {
                         $permissionIds  = array_column($permissions, 'permission_id');
                         $permissionList = AdminPermissionModel::where('id', 'in', $permissionIds)->select()->toArray();
@@ -190,12 +191,15 @@ class Role
                         }
                         unset($permissionList[""]);
 
-                        \teamones\casbin\Enforcer::deletePermissionsForUser('admin_role_' . request()->input('id'));
                         array_map(function ($item) {
                             if (!empty($item['class']) && !empty($item['method'])) {
                                 \teamones\casbin\Enforcer::addPermissionForUser('admin_role_' . request()->input('id'), substr($item['class'], strlen('app\\' . request()->app)), $item['method']);
                             }
                         }, $permissionList);
+                    }
+                    \teamones\casbin\Enforcer::loadPolicy();
+                    for ($i = 0; $i < config('server.count'); $i++) {
+                        \support\Redis::set('CasbinLoadPolicy:' . $i, 1);
                     }
 
                     return api([], 200, '操作成功');

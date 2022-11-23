@@ -112,6 +112,10 @@ class AccessControl implements \Webman\MiddlewareInterface
         }
 
         // 权限校验
+        if (\support\Redis::exists('CasbinLoadPolicy:' . request()->connection->worker->id)) {
+            \teamones\casbin\Enforcer::loadPolicy();
+            \support\Redis::del('CasbinLoadPolicy:' . request()->connection->worker->id);
+        }
         if (!\teamones\casbin\Enforcer::enforce('admin_admin_' . session('adminId'), substr(request()->controller, strlen('app\\' . request()->app)), request()->action)) {
             return api([], 999, '没有权限');
         }

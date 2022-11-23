@@ -134,7 +134,7 @@ class ActionHook implements MiddlewareInterface
                         continue;
                     }
                     try {
-                        \support\Redis::connection($key)->listen(function (\Illuminate\Redis\Events\CommandExecuted $command) use ($key) {
+                        \support\Redis::connection($key)->listen(function (\Illuminate\Redis\Events\CommandExecuted $command) {
                             $parameters = array_map(function ($item) {
                                 if (is_array($item)) {
                                     return json_encode($item, 320);
@@ -147,7 +147,7 @@ class ActionHook implements MiddlewareInterface
                                 return;
                             }
 
-                            $this->redisLogs .= "[Redis] [connection:$key] Redis::{$command->command}('" . $parameters . "') [ RunTime: {$command->time} ms ]\n";
+                            $this->redisLogs .= "[Redis] [connection:{$command->connectionName}] Redis::{$command->command}('" . $parameters . "') [ RunTime: {$command->time} ms ]\n";
                         });
                     } catch (\Throwable $e) {
                     }

@@ -263,6 +263,10 @@ class Admin
                             \teamones\casbin\Enforcer::addRoleForUser('admin_admin_' . request()->input('id'), 'admin_role_' . $item);
                         }, request()->input('roles'));
                     }
+                    \teamones\casbin\Enforcer::loadPolicy();
+                    for ($i = 0; $i < config('server.count'); $i++) {
+                        \support\Redis::set('CasbinLoadPolicy:' . $i, 1);
+                    }
 
                     return api([], 200, '操作成功');
                 } else {
@@ -352,6 +356,10 @@ class Admin
                                 \teamones\casbin\Enforcer::addPermissionForUser('admin_admin_' . request()->input('id'), substr($item['class'], strlen('app\\' . request()->app)), $item['method']);
                             }
                         }, $permissionList);
+                    }
+                    \teamones\casbin\Enforcer::loadPolicy();
+                    for ($i = 0; $i < config('server.count'); $i++) {
+                        \support\Redis::set('CasbinLoadPolicy:' . $i, 1);
                     }
 
                     return api([], 200, '操作成功');
