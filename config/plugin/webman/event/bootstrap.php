@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of webman.
  *
@@ -14,9 +13,5 @@
  */
 
 return [
-    'files' => [
-        base_path() . '/app/common/functions.php',
-        base_path() . '/support/Request.php',
-        base_path() . '/support/Response.php',
-    ]
+    Webman\Event\BootStrap::class,
 ];

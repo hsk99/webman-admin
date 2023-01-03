@@ -14,7 +14,15 @@
 function get_system($key = null, $default = null)
 {
     if (!\support\hsk99\Cache::has('system')) {
-        \support\hsk99\Cache::set('system', config('system', []));
+        $config = [];
+        if (is_phar()) {
+            if (is_float(base_path(false) . '/system.php')) {
+                $config = include base_path(false) . '/system.php';
+            }
+        } else {
+            $config = config('system', []);
+        }
+        \support\hsk99\Cache::set('system', $config);
     }
     $data = \support\hsk99\Cache::get('system', []);
 
@@ -147,34 +155,6 @@ function get_date($isMicro = false): string
     }
 
     return $date;
-}
-
-/**
- * 组装数据，hsk99/webman-gateway-worker
- *
- * @author HSK
- * @date 2022-01-06 11:50:49
- *
- * @param string $event
- * @param integer $code
- * @param string $msg
- * @param array $data
- *
- * @return array
- */
-function event($event = '', $code = 200, $msg = 'success', $data = []): array
-{
-    $result = [
-        'code' => $code,
-        'msg'  => $msg,
-        'data' => $data,
-    ];
-
-    if (!empty($event)) {
-        $result = ['event' => $event] + $result;
-    }
-
-    return $result;
 }
 
 /**

@@ -2,12 +2,12 @@
 
 namespace app\admin\controller;
 
-use app\common\model\AdminPermission as AdminPermissionModel;
-use app\common\model\AdminAdmin as AdminAdminModel;
-use app\common\model\AdminAdminRole as AdminAdminRoleModel;
-use app\common\model\AdminRolePermission as AdminRolePermissionModel;
-use app\common\model\AdminAdminPermission as AdminAdminPermissionModel;
-use app\common\model\AdminFile as AdminFileModel;
+use app\admin\model\AdminPermission as AdminPermissionModel;
+use app\admin\model\AdminAdmin as AdminAdminModel;
+use app\admin\model\AdminAdminRole as AdminAdminRoleModel;
+use app\admin\model\AdminRolePermission as AdminRolePermissionModel;
+use app\admin\model\AdminAdminPermission as AdminAdminPermissionModel;
+use app\admin\model\AdminFile as AdminFileModel;
 
 class Index
 {
@@ -242,7 +242,7 @@ class Index
                             'name' => $file->getUploadName(),
                             'href' => str_replace(public_path(), '', $path),
                             'mime' => $file->getUploadMineType(),
-                            'size' => byte_size(filesize($path) ?? 0),
+                            'size' => byte_size($file->getSize()),
                             'type' => 1,
                             'ext'  => $file->getUploadExtension(),
                         ];

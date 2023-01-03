@@ -15,7 +15,7 @@
 
 return [
     '' => [
-        \app\common\middleware\ActionHook::class,
+        \app\common\middleware\RequestMonitoring::class,
     ],
     'admin' => [
         \app\admin\middleware\AccessControl::class,

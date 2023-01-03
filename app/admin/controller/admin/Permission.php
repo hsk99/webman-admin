@@ -2,9 +2,9 @@
 
 namespace app\admin\controller\admin;
 
-use app\common\model\AdminPermission as AdminPermissionModel;
-use app\common\model\AdminAdminPermission as AdminAdminPermissionModel;
-use app\common\model\AdminRolePermission as AdminRolePermissionModel;
+use app\admin\model\AdminPermission as AdminPermissionModel;
+use app\admin\model\AdminAdminPermission as AdminAdminPermissionModel;
+use app\admin\model\AdminRolePermission as AdminRolePermissionModel;
 
 class Permission
 {

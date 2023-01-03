@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\model;
+namespace app\admin\model;
 
 use support\hsk99\Model;
 

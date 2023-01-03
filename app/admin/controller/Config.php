@@ -36,7 +36,12 @@ class Config
                     }
                 }
                 $str .= "];";
-                @file_put_contents(config_path() . '/system.php', $str);
+
+                if (is_phar()) {
+                    @file_put_contents(base_path(false) . '/system.php', $str);
+                } else {
+                    @file_put_contents(config_path() . '/system.php', $str);
+                }
 
                 \support\hsk99\Cache::set('system', $data);
 

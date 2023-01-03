@@ -1,12 +1,10 @@
 
 # Pear Admin Webman
 
+[![Latest Stable Version](http://poser.pugx.org/hsk99/webman-admin/v)](https://packagist.org/packages/hsk99/webman-admin) [![Total Downloads](http://poser.pugx.org/hsk99/webman-admin/downloads)](https://packagist.org/packages/hsk99/webman-admin) [![Latest Unstable Version](http://poser.pugx.org/hsk99/webman-admin/v/unstable)](https://packagist.org/packages/hsk99/webman-admin) [![License](http://poser.pugx.org/hsk99/webman-admin/license)](https://packagist.org/packages/hsk99/webman-admin) [![PHP Version Require](http://poser.pugx.org/hsk99/webman-admin/require/php)](https://packagist.org/packages/hsk99/webman-admin)
+
 ## 项目简介
-> Pear Admin Webman 基于 [webman](https://www.workerman.net/webman "webman") + [Pear Admin Layui](http://www.pearadmin.com "Pear Admin Layui") 开发，参考 [Pear Admin Think](https://gitee.com/pear-admin/Pear-Admin-Think "Pear Admin Think") 改造实现
-
-> 演示地址：https://dev.hsk99.com.cn/
-
-> 账号 ` demo ` 密码 ` demo `
+> Pear Admin Webman 基于 [webman](https://www.workerman.net/webman "webman") + [Pear Admin Layui](http://www.pearadmin.com "Pear Admin Layui") 开发
 
 
 ## 功能介绍
@@ -72,7 +70,9 @@
 
 - 修改 ` app/admin ` 目录下文件的命名空间 ` app\admin `
 
-- 修改 ` config/middleware.php ` 中间件的配置
+- 修改 ` config/middleware.php ` 中间件配置
+
+- 修改 ` config/event.php ` Event事件配置
 
 
 ## 项目声明

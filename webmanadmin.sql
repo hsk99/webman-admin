@@ -291,10 +291,10 @@ INSERT INTO `admin_role_permission` VALUES (640, 1, 24);
 INSERT INTO `admin_role_permission` VALUES (641, 1, 25);
 
 -- ----------------------------
--- Table structure for casbin
+-- Table structure for casbin_rule
 -- ----------------------------
-DROP TABLE IF EXISTS `casbin`;
-CREATE TABLE `casbin`  (
+DROP TABLE IF EXISTS `casbin_rule`;
+CREATE TABLE `casbin_rule`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `ptype` char(8) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '规则类型',
   `v0` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
@@ -304,40 +304,40 @@ CREATE TABLE `casbin`  (
   `v4` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `v5` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 31 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'casbin表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 31 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'casbin_rule表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of casbin
+-- Records of casbin_rule
 -- ----------------------------
-INSERT INTO `casbin` VALUES (1, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'index', '', '', '');
-INSERT INTO `casbin` VALUES (2, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'add', '', '', '');
-INSERT INTO `casbin` VALUES (3, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'edit', '', '', '');
-INSERT INTO `casbin` VALUES (4, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'status', '', '', '');
-INSERT INTO `casbin` VALUES (5, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'remove', '', '', '');
-INSERT INTO `casbin` VALUES (6, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'batchRemove', '', '', '');
-INSERT INTO `casbin` VALUES (7, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'role', '', '', '');
-INSERT INTO `casbin` VALUES (8, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'permission', '', '', '');
-INSERT INTO `casbin` VALUES (9, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'recycle', '', '', '');
-INSERT INTO `casbin` VALUES (10, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'index', '', '', '');
-INSERT INTO `casbin` VALUES (11, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'add', '', '', '');
-INSERT INTO `casbin` VALUES (12, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'edit', '', '', '');
-INSERT INTO `casbin` VALUES (13, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'remove', '', '', '');
-INSERT INTO `casbin` VALUES (14, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'permission', '', '', '');
-INSERT INTO `casbin` VALUES (15, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'recycle', '', '', '');
-INSERT INTO `casbin` VALUES (16, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'index', '', '', '');
-INSERT INTO `casbin` VALUES (17, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'add', '', '', '');
-INSERT INTO `casbin` VALUES (18, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'edit', '', '', '');
-INSERT INTO `casbin` VALUES (19, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'status', '', '', '');
-INSERT INTO `casbin` VALUES (20, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'remove', '', '', '');
-INSERT INTO `casbin` VALUES (21, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'log', '', '', '');
-INSERT INTO `casbin` VALUES (22, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'removeLog', '', '', '');
-INSERT INTO `casbin` VALUES (23, 'p', 'admin_role_1', '\\controller\\Config', 'index', '', '', '');
-INSERT INTO `casbin` VALUES (24, 'p', 'admin_role_1', '\\controller\\admin\\File', 'index', '', '', '');
-INSERT INTO `casbin` VALUES (25, 'p', 'admin_role_1', '\\controller\\admin\\File', 'add', '', '', '');
-INSERT INTO `casbin` VALUES (26, 'p', 'admin_role_1', '\\controller\\admin\\File', 'remove', '', '', '');
-INSERT INTO `casbin` VALUES (27, 'p', 'admin_role_1', '\\controller\\admin\\File', 'batchRemove', '', '', '');
-INSERT INTO `casbin` VALUES (28, 'p', 'admin_role_1', '\\controller\\admin\\File', 'adds', '', '', '');
-INSERT INTO `casbin` VALUES (29, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'generate', '', '', '');
-INSERT INTO `casbin` VALUES (30, 'g', 'admin_admin_2', 'admin_role_1', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (1, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'index', '', '', '');
+INSERT INTO `casbin_rule` VALUES (2, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'add', '', '', '');
+INSERT INTO `casbin_rule` VALUES (3, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'edit', '', '', '');
+INSERT INTO `casbin_rule` VALUES (4, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'status', '', '', '');
+INSERT INTO `casbin_rule` VALUES (5, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'remove', '', '', '');
+INSERT INTO `casbin_rule` VALUES (6, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'batchRemove', '', '', '');
+INSERT INTO `casbin_rule` VALUES (7, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'role', '', '', '');
+INSERT INTO `casbin_rule` VALUES (8, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'permission', '', '', '');
+INSERT INTO `casbin_rule` VALUES (9, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'recycle', '', '', '');
+INSERT INTO `casbin_rule` VALUES (10, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'index', '', '', '');
+INSERT INTO `casbin_rule` VALUES (11, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'add', '', '', '');
+INSERT INTO `casbin_rule` VALUES (12, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'edit', '', '', '');
+INSERT INTO `casbin_rule` VALUES (13, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'remove', '', '', '');
+INSERT INTO `casbin_rule` VALUES (14, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'permission', '', '', '');
+INSERT INTO `casbin_rule` VALUES (15, 'p', 'admin_role_1', '\\controller\\admin\\Role', 'recycle', '', '', '');
+INSERT INTO `casbin_rule` VALUES (16, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'index', '', '', '');
+INSERT INTO `casbin_rule` VALUES (17, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'add', '', '', '');
+INSERT INTO `casbin_rule` VALUES (18, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'edit', '', '', '');
+INSERT INTO `casbin_rule` VALUES (19, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'status', '', '', '');
+INSERT INTO `casbin_rule` VALUES (20, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'remove', '', '', '');
+INSERT INTO `casbin_rule` VALUES (21, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'log', '', '', '');
+INSERT INTO `casbin_rule` VALUES (22, 'p', 'admin_role_1', '\\controller\\admin\\Admin', 'removeLog', '', '', '');
+INSERT INTO `casbin_rule` VALUES (23, 'p', 'admin_role_1', '\\controller\\Config', 'index', '', '', '');
+INSERT INTO `casbin_rule` VALUES (24, 'p', 'admin_role_1', '\\controller\\admin\\File', 'index', '', '', '');
+INSERT INTO `casbin_rule` VALUES (25, 'p', 'admin_role_1', '\\controller\\admin\\File', 'add', '', '', '');
+INSERT INTO `casbin_rule` VALUES (26, 'p', 'admin_role_1', '\\controller\\admin\\File', 'remove', '', '', '');
+INSERT INTO `casbin_rule` VALUES (27, 'p', 'admin_role_1', '\\controller\\admin\\File', 'batchRemove', '', '', '');
+INSERT INTO `casbin_rule` VALUES (28, 'p', 'admin_role_1', '\\controller\\admin\\File', 'adds', '', '', '');
+INSERT INTO `casbin_rule` VALUES (29, 'p', 'admin_role_1', '\\controller\\admin\\Permission', 'generate', '', '', '');
+INSERT INTO `casbin_rule` VALUES (30, 'g', 'admin_admin_2', 'admin_role_1', '', '', '', '');
 
 SET FOREIGN_KEY_CHECKS = 1;

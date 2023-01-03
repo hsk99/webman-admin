@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of webman.
  *
@@ -13,10 +12,10 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+use Webman\Log\Middleware;
+
 return [
-    'files' => [
-        base_path() . '/app/common/functions.php',
-        base_path() . '/support/Request.php',
-        base_path() . '/support/Response.php',
+    '' => [
+        Middleware::class
     ]
 ];

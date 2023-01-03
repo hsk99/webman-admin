@@ -2,10 +2,10 @@
 
 namespace app\admin\controller\admin;
 
-use app\common\model\AdminRole as AdminRoleModel;
-use app\common\model\AdminAdminRole as AdminAdminRoleModel;
-use app\common\model\AdminRolePermission as AdminRolePermissionModel;
-use app\common\model\AdminPermission as AdminPermissionModel;
+use app\admin\model\AdminRole as AdminRoleModel;
+use app\admin\model\AdminAdminRole as AdminAdminRoleModel;
+use app\admin\model\AdminRolePermission as AdminRolePermissionModel;
+use app\admin\model\AdminPermission as AdminPermissionModel;
 
 class Role
 {
@@ -167,7 +167,7 @@ class Role
                 if ($adminRolePermissionDelete && $adminRolePermissionCreate && $adminRoleUpdate) {
                     AdminRoleModel::commit();
 
-                    \teamones\casbin\Enforcer::deletePermissionsForUser('admin_role_' . request()->input('id'));
+                    \Casbin\WebmanPermission\Permission::deletePermissionsForUser('admin_role_' . request()->input('id'));
                     if (request()->input('permissions')) {
                         $permissionIds  = array_column($permissions, 'permission_id');
                         $permissionList = AdminPermissionModel::where('id', 'in', $permissionIds)->select()->toArray();
@@ -193,13 +193,9 @@ class Role
 
                         array_map(function ($item) {
                             if (!empty($item['class']) && !empty($item['method'])) {
-                                \teamones\casbin\Enforcer::addPermissionForUser('admin_role_' . request()->input('id'), substr($item['class'], strlen('app\\' . request()->app)), $item['method']);
+                                \Casbin\WebmanPermission\Permission::addPermissionForUser('admin_role_' . request()->input('id'), substr($item['class'], strlen('app\\' . request()->app)), $item['method']);
                             }
                         }, $permissionList);
-                    }
-                    \teamones\casbin\Enforcer::loadPolicy();
-                    for ($i = 0; $i < config('server.count'); $i++) {
-                        \support\Redis::set('CasbinLoadPolicy:' . $i, 1);
                     }
 
                     return api([], 200, '操作成功');
@@ -254,7 +250,7 @@ class Role
                         $result = AdminRoleModel::destroy($ids, true);
 
                         array_map(function ($id) {
-                            \teamones\casbin\Enforcer::deletePermissionsForUser('admin_role_' . $id);
+                            \Casbin\WebmanPermission\Permission::deletePermissionsForUser('admin_role_' . $id);
                         }, $ids);
                     }
 

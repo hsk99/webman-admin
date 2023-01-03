@@ -2,12 +2,12 @@
 
 namespace app\admin\controller\admin;
 
-use app\common\model\AdminAdmin as AdminAdminModel;
-use app\common\model\AdminAdminRole as AdminAdminRoleModel;
-use app\common\model\AdminAdminPermission as AdminAdminPermissionModel;
-use app\common\model\AdminRole as AdminRoleModel;
-use app\common\model\AdminPermission as AdminPermissionModel;
-use app\common\model\AdminAdminLog as AdminAdminLogModel;
+use app\admin\model\AdminAdmin as AdminAdminModel;
+use app\admin\model\AdminAdminRole as AdminAdminRoleModel;
+use app\admin\model\AdminAdminPermission as AdminAdminPermissionModel;
+use app\admin\model\AdminRole as AdminRoleModel;
+use app\admin\model\AdminPermission as AdminPermissionModel;
+use app\admin\model\AdminAdminLog as AdminAdminLogModel;
 
 class Admin
 {
@@ -257,15 +257,11 @@ class Admin
                 if ($adminRoleDelete && $adminRoleCreate) {
                     AdminAdminModel::commit();
 
-                    \teamones\casbin\Enforcer::deleteRolesForUser('admin_admin_' . request()->input('id'));
+                    \Casbin\WebmanPermission\Permission::deleteRolesForUser('admin_admin_' . request()->input('id'));
                     if (request()->input('roles')) {
                         array_map(function ($item) {
-                            \teamones\casbin\Enforcer::addRoleForUser('admin_admin_' . request()->input('id'), 'admin_role_' . $item);
+                            \Casbin\WebmanPermission\Permission::addRoleForUser('admin_admin_' . request()->input('id'), 'admin_role_' . $item);
                         }, request()->input('roles'));
-                    }
-                    \teamones\casbin\Enforcer::loadPolicy();
-                    for ($i = 0; $i < config('server.count'); $i++) {
-                        \support\Redis::set('CasbinLoadPolicy:' . $i, 1);
                     }
 
                     return api([], 200, '操作成功');
@@ -330,7 +326,7 @@ class Admin
                 if ($adminPermissionDelete && $adminPermissionCreate) {
                     AdminAdminModel::commit();
 
-                    \teamones\casbin\Enforcer::deletePermissionsForUser('admin_admin_' . request()->input('id'));
+                    \Casbin\WebmanPermission\Permission::deletePermissionsForUser('admin_admin_' . request()->input('id'));
                     if (request()->input('permissions')) {
                         $permissionIds  = array_column($permissions, 'permission_id');
                         $permissionList = AdminPermissionModel::where('id', 'in', $permissionIds)->select()->toArray();
@@ -353,13 +349,9 @@ class Admin
                         }
                         array_map(function ($item) {
                             if (!empty($item['class']) && !empty($item['method'])) {
-                                \teamones\casbin\Enforcer::addPermissionForUser('admin_admin_' . request()->input('id'), substr($item['class'], strlen('app\\' . request()->app)), $item['method']);
+                                \Casbin\WebmanPermission\Permission::addPermissionForUser('admin_admin_' . request()->input('id'), substr($item['class'], strlen('app\\' . request()->app)), $item['method']);
                             }
                         }, $permissionList);
-                    }
-                    \teamones\casbin\Enforcer::loadPolicy();
-                    for ($i = 0; $i < config('server.count'); $i++) {
-                        \support\Redis::set('CasbinLoadPolicy:' . $i, 1);
                     }
 
                     return api([], 200, '操作成功');
@@ -415,7 +407,7 @@ class Admin
                         $result = AdminAdminModel::destroy($ids, true);
 
                         array_map(function ($id) {
-                            \teamones\casbin\Enforcer::deletePermissionsForUser('admin_admin_' . $id);
+                            \Casbin\WebmanPermission\Permission::deletePermissionsForUser('admin_admin_' . $id);
                         }, $ids);
                     }
 

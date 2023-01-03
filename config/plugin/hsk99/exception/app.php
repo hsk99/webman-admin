@@ -1,6 +1,8 @@
 <?php
 
-if (is_file(config_path() . '/system.php')) {
+if (is_phar() && is_file(base_path(false) . '/system.php')) {
+    $system = include base_path(false) . '/system.php';
+} else if (is_file(config_path() . '/system.php')) {
     $system = include config_path() . '/system.php';
 } else {
     $system = [];

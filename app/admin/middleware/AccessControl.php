@@ -17,7 +17,7 @@ class AccessControl implements \Webman\MiddlewareInterface
 
         // 已登录，跳出页面
         if (
-            strtolower(request()->controller) === "app\\request()->app\controller\login"
+            strtolower(request()->controller) === "app\\" . request()->app . "\controller\login"
             && strtolower(request()->action) === 'index'
             && 'GET' === request()->method()
             && session()->has('adminId')
@@ -88,16 +88,7 @@ class AccessControl implements \Webman\MiddlewareInterface
         }
 
         // 记录后台访问日志
-        \Webman\RedisQueue\Client::send('webman_log_admin', [
-            'uid'        => session('adminId'),
-            'url'        => substr(request()->path(), 1 + strlen(request()->app)) ?: "/",
-            'desc'       => json_encode([
-                'method' => request()->method() ?? '',   // 请求方法
-                'param'  => request()->all() ?? [],      // 请求参数
-            ]),
-            'ip'         => request()->getRealIp($safe_mode = true),
-            'user_agent' => request()->header('user-agent')
-        ]);
+        \Webman\Event\Event::emit('admin.request.log', null);
 
         // 跳出权限校验
         if (
@@ -112,11 +103,7 @@ class AccessControl implements \Webman\MiddlewareInterface
         }
 
         // 权限校验
-        if (\support\Redis::exists('CasbinLoadPolicy:' . request()->connection->worker->id)) {
-            \teamones\casbin\Enforcer::loadPolicy();
-            \support\Redis::del('CasbinLoadPolicy:' . request()->connection->worker->id);
-        }
-        if (!\teamones\casbin\Enforcer::enforce('admin_admin_' . session('adminId'), substr(request()->controller, strlen('app\\' . request()->app)), request()->action)) {
+        if (!\Casbin\WebmanPermission\Permission::enforce('admin_admin_' . session('adminId'), substr(request()->controller, strlen('app\\' . request()->app)), request()->action)) {
             return api([], 999, '没有权限');
         }
 

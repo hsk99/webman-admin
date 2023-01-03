@@ -2,7 +2,7 @@
 
 namespace app\{{$app}}\controller\{{$left}};
 
-use app\common\model\{{$table_hump}} as {{$table_hump}}Model;
+use app\{{$app}}\model\{{$table_hump}} as {{$table_hump}}Model;
 
 /**
  * {{$ename}}

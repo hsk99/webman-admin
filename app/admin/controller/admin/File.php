@@ -2,7 +2,7 @@
 
 namespace app\admin\controller\admin;
 
-use app\common\model\AdminFile as AdminFileModel;
+use app\admin\model\AdminFile as AdminFileModel;
 
 class File
 {

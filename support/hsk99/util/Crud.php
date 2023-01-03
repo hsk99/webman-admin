@@ -3,7 +3,7 @@
 namespace support\hsk99\util;
 
 use think\facade\Db;
-use app\common\model\AdminPermission as AdminPermissionModel;
+use app\admin\model\AdminPermission as AdminPermissionModel;
 
 class Crud
 {
@@ -13,10 +13,17 @@ class Crud
     // 参数
     protected static $data;
 
+    /**
+     * 连接数据库
+     *
+     * @var string
+     */
+    public static $connection = null;
+
     // 获取所有表
     public static function getTable()
     {
-        foreach (Db::getTables() as $k => $v) {
+        foreach (Db::connect(static::$connection)->getTables() as $k => $v) {
             $list[] = ['name' => $v];
         }
         return json(['code' => 0, 'data' => $list]);
@@ -35,7 +42,7 @@ class Crud
                 return api([], 400, '表名格式不正确');
             };
             try {
-                Db::execute('CREATE TABLE ' . config('thinkorm.connections.mysql.prefix') . $data['name'] . '(
+                Db::connect(static::$connection)->execute('CREATE TABLE ' . config('thinkorm.connections.mysql.prefix') . $data['name'] . '(
                     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT "id",
                     `create_time` datetime NULL DEFAULT NULL COMMENT "创建时间",
                     `update_time` datetime NULL DEFAULT NULL COMMENT "更新时间",
@@ -55,9 +62,9 @@ class Crud
     public static function getCrud()
     {
         return [
-            'data'        => Db::getFields(request()->input('name')),
+            'data'        => Db::connect(static::$connection)->getFields(request()->input('name')),
             'permissions' => get_tree(AdminPermissionModel::order('sort', 'asc')->select()->toArray()),
-            'desc'        => Db::query('SELECT TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_NAME = "' . request()->input('name') . '"')[0]['TABLE_COMMENT']
+            'desc'        => Db::connect(static::$connection)->query('SELECT TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_NAME = "' . request()->input('name') . '"')[0]['TABLE_COMMENT']
         ];
     }
 
@@ -67,7 +74,7 @@ class Crud
         if ('POST' === request()->method()) {
             // 验证
             if (in_array(substr(request()->input('name'), strlen(config('thinkorm.connections.mysql.prefix'))), self::$check)) return api([], 400, '默认字段禁止操作');
-            Db::query('drop table ' . request()->input('name'));
+            Db::connect(static::$connection)->query('drop table ' . request()->input('name'));
             if (request()->input('type')) {
                 try {
                     $data['table'] = substr(request()->input('name'), strlen(config('thinkorm.connections.mysql.prefix')));
@@ -79,15 +86,11 @@ class Crud
                     $data['right'] = substr($data['table'], strlen($data['left']) + 1);
                     // 右转驼峰
                     $data['right_hump'] = underline_hump($data['right']);
-                    $commom = app_path() . DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR;
                     // 控制器
                     $controller = app_path() . DIRECTORY_SEPARATOR . request()->app . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . $data['left'] . DIRECTORY_SEPARATOR . $data['right_hump'] . '.php';
                     if (file_exists($controller)) unlink($controller);
-                    // API
-                    $api = app_path() . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . $data['left'] . DIRECTORY_SEPARATOR . $data['right_hump'] . '.php';
-                    if (file_exists($api)) unlink($api);
                     // 模型
-                    $model = $commom . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR . $data['table_hump'] . '.php';
+                    $model = app_path() . DIRECTORY_SEPARATOR . request()->app . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR . $data['table_hump'] . '.php';
                     if (file_exists($model)) unlink($model);
                     // 删除视图目录
                     $view = app_path() . DIRECTORY_SEPARATOR . request()->app . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . $data['left'] . DIRECTORY_SEPARATOR . $data['right'];
@@ -135,16 +138,19 @@ class Crud
                 } else {
                     self::$data['model_del'] = 'protected $deleteTime = false;';
                 }
+                if (static::$connection) {
+                    self::$data['connection'] = 'protected $connection = "' . static::$connection . '";';
+                } else {
+                    self::$data['connection'] = null;
+                }
             }
 
             // 路径
             $tpl    = base_path() . DIRECTORY_SEPARATOR . 'support' . DIRECTORY_SEPARATOR . 'hsk99' . DIRECTORY_SEPARATOR . 'tpl' . DIRECTORY_SEPARATOR;
-            $commom = app_path() . DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR;
             $view   = app_path() . DIRECTORY_SEPARATOR . request()->app . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . self::$data['left'] . DIRECTORY_SEPARATOR . self::$data['right'] . DIRECTORY_SEPARATOR;
             $crud   = [
                 app_path() . DIRECTORY_SEPARATOR . request()->app . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . self::$data['left'] . DIRECTORY_SEPARATOR . self::$data['right_hump'] . '.php' => self::getController($tpl . 'controller.tpl'),
-                app_path() . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . self::$data['left'] . DIRECTORY_SEPARATOR . self::$data['right_hump'] . '.php' => self::getController($tpl . 'api.tpl'),
-                $commom . 'model' . DIRECTORY_SEPARATOR . self::$data['table_hump'] . '.php' => self::getModel($tpl . 'model.tpl'),
+                app_path() . DIRECTORY_SEPARATOR . request()->app . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR . self::$data['table_hump'] . '.php' => self::getModel($tpl . 'model.tpl'),
                 $view . 'index.html' => self::getIndex($tpl . 'index.tpl'),
                 $view . 'add.html' => self::getAdd($tpl . 'add.tpl'),
                 $view . 'edit.html' => self::getAdd($tpl . 'edit.tpl'),
@@ -175,8 +181,8 @@ class Crud
     public static function getModel($tpl)
     {
         return str_replace(
-            ['{{$table_hump}}', '{{$table}}', '{{$model_search}}', '{{$model_del}}'],
-            [self::$data['table_hump'], self::$data['table'], implode("", self::$data['model_search'] ?? []), self::$data['model_del'] ?? ''],
+            ['{{$app}}', '{{$table_hump}}', '{{$table}}', '{{$model_search}}', '{{$model_del}}', '{{$connection}}'],
+            [request()->app, self::$data['table_hump'], self::$data['table'], implode("", self::$data['model_search'] ?? []), self::$data['model_del'] ?? '', self::$data['connection'] ?? ''],
             file_get_contents($tpl)
         );
     }

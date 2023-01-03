@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-use app\common\model\AdminAdmin as AdminAdminModel;
+use app\admin\model\AdminAdmin as AdminAdminModel;
 
 class Login
 {

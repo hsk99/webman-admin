@@ -1,14 +1,14 @@
 <?php
 
-namespace app\common\model;
+namespace app\admin\model;
 
 use support\hsk99\Model;
 use think\model\concern\SoftDelete;
 
-class AdminRole extends Model
+class AdminAdmin extends Model
 {
     use SoftDelete;
 
-    protected $table      = 'admin_role';
+    protected $table      = 'admin_admin';
     protected $deleteTime = 'delete_time';
 }
