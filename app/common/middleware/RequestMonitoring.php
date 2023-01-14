@@ -89,6 +89,9 @@ class RequestMonitoring implements \Webman\MiddlewareInterface
                                     $item = implode('\', \'', $item);
                                 }
                             }
+                            if ("Redis::get('ping')" === "Redis::{$command->command}('" . implode('\', \'', $command->parameters) . "')") {
+                                return;
+                            }
                             $this->redisLogs[] = "[Redis]\t[connection:{$command->connectionName}] Redis::{$command->command}('" . implode('\', \'', $command->parameters) . "') ({$command->time} ms)" . PHP_EOL;
                         });
                     } catch (\Throwable $e) {
