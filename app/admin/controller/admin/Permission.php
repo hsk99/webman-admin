@@ -197,10 +197,10 @@ class Permission
                 if (
                     "/" === substr($route->getPath(), -1, 1) ||
                     "/" . request()->app === $route->getPath() ||
-                    request()->app !== substr($route->getPath(), 1, strlen(request()->app)) ||
-                    request()->app . '/crud' === substr($route->getPath(), 1, strlen(request()->app . '/crud')) ||
-                    request()->app . '/index' === substr($route->getPath(), 1, strlen(request()->app . '/index')) ||
-                    request()->app . '/login' === substr($route->getPath(), 1, strlen(request()->app . '/login'))
+                    request()->app !== strtolower(substr($route->getPath(), 1, strlen(request()->app))) ||
+                    request()->app . '/crud' === strtolower(substr($route->getPath(), 1, strlen(request()->app . '/crud'))) ||
+                    request()->app . '/index' === strtolower(substr($route->getPath(), 1, strlen(request()->app . '/index'))) ||
+                    request()->app . '/login' === strtolower(substr($route->getPath(), 1, strlen(request()->app . '/login')))
                 ) {
                     continue;
                 }
