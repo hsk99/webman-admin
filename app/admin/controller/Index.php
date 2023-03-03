@@ -236,7 +236,6 @@ class Index
                     case 1:
                     default:
                         $path = public_path() . '/upload/' . $file->getUploadExtension() . '/' . date('Ymd') . '/' . uniqid() . '.' . $file->getUploadExtension();
-                        $file->move($path);
 
                         $data = [
                             'name' => $file->getUploadName(),
@@ -246,6 +245,8 @@ class Index
                             'type' => 1,
                             'ext'  => $file->getUploadExtension(),
                         ];
+
+                        $file->move($path);
 
                         break;
                 }
