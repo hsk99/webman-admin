@@ -1,6 +1,20 @@
 <?php
 
 /**
+ * 获取某个composer包的版本
+ * @param string $package
+ * @return mixed|string
+ */
+function get_package_version(string $package)
+{
+    $installed_php = base_path('vendor/composer/installed.php');
+    if (is_file($installed_php)) {
+        $packages = include $installed_php;
+    }
+    return substr($packages['versions'][$package]['version'] ?? 'unknown  ', 0, -2);
+}
+
+/**
  * 获取系统配置
  *
  * @author HSK

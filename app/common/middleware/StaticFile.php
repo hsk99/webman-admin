@@ -28,7 +28,9 @@ class StaticFile implements MiddlewareInterface
             'Server' => 'hsk99'
         ]);
 
-        $this->recordTransceivedTraffic($request, $response);
+        if (config('app.monitor')) {
+            $this->recordTransceivedTraffic($request, $response);
+        }
 
         return $response;
     }

@@ -61,7 +61,9 @@ class Index
         }
 
         $permissionList = array_map(function ($item) {
-            $item['href'] =  '/' . request()->app . $item['href'];
+            if ('/app/' !== substr($item['href'], 0, 5)) {
+                $item['href'] =  '/' . request()->app . $item['href'];
+            }
             return $item;
         }, $permissionList);
 
@@ -112,7 +114,7 @@ class Index
         return view('index/home', [
             'os'             => PHP_OS,
             'php'            => PHP_VERSION,
-            'webman_version' => 'v' . WEBMAN_VERSION,
+            'webman_version' => 'v' . get_package_version('workerman/webman-framework'),
             'mysql'          => \think\facade\Db::query('SELECT VERSION() as mysql_version')[0]['mysql_version'],
             'upload'         => config('server.max_package_size') / (1024 * 1024) . 'M',
         ]);
